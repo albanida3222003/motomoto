@@ -325,12 +325,15 @@ function openCheckout() {
 
 function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); }
 
+// Configuración de tu número de WhatsApp
+const MY_WHATSAPP_PHONE = '51982780329'; 
+
 function updateShippingPreview() {
   const el = document.getElementById('shippingPreview');
   const ship = currentShipping();
   if (cart.length === 0 || ship == null) { el.classList.remove('show'); return; }
-  const km = distanceCache[cart[0].restaurantId];
-  el.textContent = `Distancia: ${km.toFixed(2)} km · Envío: S/ ${ship.toFixed(2)}`;
+  // Solo mostramos el costo total del envío, no la distancia ni fórmula
+  el.textContent = `Costo de envío: S/ ${ship.toFixed(2)}`;
   el.classList.add('show');
 }
 
@@ -338,27 +341,51 @@ function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
+  
   document.getElementById('addrErr').style.display = (!addr && !userLocation) ? 'block' : 'none';
   document.getElementById('nameErr').style.display = !name ? 'block' : 'none';
   const phoneOk = /^\d{9}$/.test(phone);
   document.getElementById('phoneErr').style.display = !phoneOk ? 'block' : 'none';
+  
   if ((!addr && !userLocation) || !name || !phoneOk) return;
 
   const sub = cartSubtotal();
   const ship = currentShipping() || 0;
   const total = sub + ship;
   const r = restaurants.find(x => x.id === cart[0].restaurantId);
-  const km = distanceCache[r.id];
+
+  // 1. Armamos la lista de platos elegidos
+  let itemsText = '';
+  cart.forEach(c => {
+    itemsText += `• ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
+  });
+
+  // 2. Construimos el mensaje de WhatsApp bien formateado
+  let msg = `*¡NUEVO PEDIDO EN SABORPUCALLPA!* 🍽️\n\n`;
+  msg += `*Restaurante:* ${r.name}\n`;
+  msg += `*Cliente:* ${name}\n`;
+  msg += `*Teléfono:* ${phone}\n`;
+  msg += `*Dirección:* ${addr || 'Ubicación enviada por GPS'}\n`;
+  if (userLocation) {
+    msg += `*Ubicación GPS:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+  }
+  msg += `\n*Detalle del pedido:*\n${itemsText}\n`;
+  msg += `*Subtotal:* S/ ${sub.toFixed(2)}\n`;
+  msg += `*Envío:* S/ ${ship.toFixed(2)}\n`;
+  msg += `*TOTAL A PAGAR:* S/ ${total.toFixed(2)}\n\n`;
+  msg += `_Pago contra entrega_`;
+
+  // 3. Abrimos la API oficial de WhatsApp
+  const waUrl = `https://api.whatsapp.com/send?phone=${MY_WHATSAPP_PHONE}&text=${encodeURIComponent(msg)}`;
+  window.open(waUrl, '_blank');
+
+  // 4. Mostramos el modal de éxito local
+  closeCheckout();
   document.getElementById('ticket').innerHTML = `
     <div><b>Restaurante:</b> ${r.name}</div>
-    <div><b>Cliente:</b> ${name} · ${phone}</div>
-    <div><b>Dirección:</b> ${addr || 'Ubicación GPS'}</div>
-    ${userLocation ? `<div><b>GPS:</b> ${userLocation.lat.toFixed(5)}, ${userLocation.lng.toFixed(5)}</div>` : ''}
-    ${km != null ? `<div><b>Distancia:</b> ${km.toFixed(2)} km</div>` : ''}
-    <div><b>Subtotal:</b> S/ ${sub.toFixed(2)}</div>
-    <div><b>Envío:</b> S/ ${ship.toFixed(2)}</div>
-    <div><b>Total:</b> S/ ${total.toFixed(2)}</div>`;
-  closeCheckout();
+    <div><b>Cliente:</b> ${name}</div>
+    <div><b>Total:</b> S/ ${total.toFixed(2)}</div>
+    <p style="margin-top:10px; color:var(--leaf-dark); font-weight:bold;">¡Se ha abierto WhatsApp para enviar tu pedido!</p>`;
   document.getElementById('confirmModal').classList.add('open');
 }
 
