@@ -266,18 +266,30 @@ function filterByCategory(catId) {
    RENDERIZADO DE COMPONENTES
    ========================================================== */
 function renderRestaurants() {
-  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
   const grid = document.getElementById('restaurantsGrid');
   grid.innerHTML = '';
 
   const filtered = restaurants.filter(r => {
+    // 1. Filtrado por categoría
     const matchCategory = (selectedCategory === 'all' || r.category === selectedCategory);
-    const matchQuery = !q || r.name.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q);
+    
+    // 2. Coincidencia en datos del restaurante (nombre o descripción)
+    const matchRest = r.name.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q);
+
+    // 3. NUEVO: Coincidencia en alguno de los platillos del menú (nombre o descripción)
+    const matchMenu = r.menu.some(m => 
+      m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q)
+    );
+
+    // Si coincide el restaurante O coincide algún plato de su menú, se muestra
+    const matchQuery = !q || matchRest || matchMenu;
+
     return matchCategory && matchQuery;
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#8a7256;">No se encontraron restaurantes en esta categoría.</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#8a7256;">No se encontraron restaurantes o platillos que coincidan.</div>';
     return;
   }
 
