@@ -245,6 +245,17 @@ function renderPromotions() {
   });
 }
 
+// Función para desplazar el carrusel con las flechas < y >
+function scrollPromos(direction) {
+  const container = document.getElementById('promosCarousel');
+  if (!container) return;
+  const scrollAmount = 300; // Distancia del desplazamiento
+  container.scrollBy({
+    left: direction * scrollAmount,
+    behavior: 'smooth'
+  });
+}
+
 function filterByCategory(catId) {
   selectedCategory = catId;
   renderCategories();

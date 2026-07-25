@@ -51,27 +51,27 @@
 </section>
 <!-- FIN DE NUEVA SECCIÓN -->
 
-<!-- CONTENEDOR FLEX/GRID PARA ORDENAR EN PC -->
+<!-- CONTENEDOR UNIFICADO CON TIPOGRAFÍA Y FLECHAS -->
 <div class="layout-services-promos">
 
-  <!-- SECCIÓN 1: SERVICIOS -->
+  <!-- SECCIÓN SERVICIOS -->
   <section class="services-section">
     <h3 class="section-title">MOTOMOTO SERVICIOS</h3>
     <div class="services-banner">
       <div class="services-header">
-        <h4>¿Necesitas moverte o enviar algo? <span class="badge-new">NUEVO</span></h4>
-        <p>Tú pones el precio: Transporte, Mudanza o Entregas al instante.</p>
+        <h4>¿Necesitas llevar algo? <span class="badge-new">¡NUEVO!</span></h4>
+        <p>¡Tú pones el precio! Pide un Transporte, Carga/Mudanza o Entregas al instante.</p>
       </div>
       <div class="services-grid">
-        <div class="service-card" onclick="showToast('Transporte disponible pronto')">
+        <div class="service-card" onclick="showToast('Servicio de Transporte')">
           <span class="service-icon">🛺</span>
           <span>TRANSPORTE</span>
         </div>
-        <div class="service-card" onclick="showToast('Carga disponible pronto')">
+        <div class="service-card" onclick="showToast('Servicio de Carga/Mudanza')">
           <span class="service-icon">🚚</span>
-          <span>MUDANZA</span>
+          <span>CARGA/MUDANZA</span>
         </div>
-        <div class="service-card" onclick="showToast('Servicio activo')">
+        <div class="service-card" onclick="showToast('Servicio de Entregas')">
           <span class="service-icon">📦</span>
           <span>ENTREGAS</span>
         </div>
@@ -79,15 +79,19 @@
     </div>
   </section>
 
-  <!-- SECCIÓN 2: PROMOCIONES -->
+  <!-- SECCIÓN PROMOCIONES CON FLECHAS -->
   <section class="promos-section">
-    <h3 class="section-title">PROMOCIONES EXCLUSIVAS</h3>
-    <div class="promos-carousel" id="promosCarousel">
-      <!-- Se genera con JavaScript -->
+    <h3 class="section-title">PROMOCIONES SOLO POR MOTOMOTO</h3>
+    <div class="promos-wrapper">
+      <button class="nav-arrow prev" onclick="scrollPromos(-1)">‹</button>
+      <div class="promos-carousel" id="promosCarousel">
+        <!-- Generado dinámicamente -->
+      </div>
+      <button class="nav-arrow next" onclick="scrollPromos(1)">›</button>
     </div>
   </section>
 
-</div> <!-- Cierre de layout-services-promos -->
+</div>
 
 <section class="section" id="restaurantsSection">
   <h2 id="sectionHeading">Restaurantes en Pucallpa</h2>
