@@ -10,15 +10,33 @@ const SHIPPING = {
 const DISTANCE_MODE = 'haversine'; // 'haversine' o 'road'
 const GOOGLE_MAPS_API_KEY = '';
 
+// Configuración de tu número de WhatsApp
+const MY_WHATSAPP_PHONE = '51982780329'; 
+
 /* ==========================================================
-   SIMULACIÓN DE BASE DE DATOS (MOCKEADA EN JSON)
+   NUEVO: CATEGORÍAS Y ESTADO DE FILTRADO
+   ========================================================== */
+const categories = [
+  { id: 'all', name: 'Todos', icon: '🍽️' },
+  { id: 'amazonica', name: 'Amazónica', icon: '🍃' },
+  { id: 'marino', name: 'Marinos', icon: '🐙' },
+  { id: 'broster', name: 'Broster', icon: '🍗' },
+  { id: 'polleria', name: 'Pollería', icon: '🐔' },
+  { id: 'bebidas', name: 'Bebidas', icon: '🧃' }
+];
+
+let selectedCategory = 'all';
+
+/* ==========================================================
+   SIMULACIÓN DE BASE DE DATOS (CON CATEGORÍAS)
    ========================================================== */
 const restaurants = [
   {
     id: 'r1',
     name: 'El Aguajal',
+    category: 'amazonica', // 👈 Categoría asignada
     desc: 'Cocina amazónica tradicional',
-    phone: '51987654321', // Número del restaurante
+    phone: '51987654321',
     rating: 4.8,
     time: '25-35 min',
     img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
@@ -33,8 +51,9 @@ const restaurants = [
   {
     id: 'r2',
     name: 'Chifa Amazónico',
+    category: 'amazonica',
     desc: 'Fusión oriental y selvática',
-    phone: '51987654321', // Número del restaurante
+    phone: '51987654321',
     rating: 4.6,
     time: '30-40 min',
     img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
@@ -48,8 +67,9 @@ const restaurants = [
   {
     id: 'r3',
     name: 'Parrilla del Ucayali',
+    category: 'broster',
     desc: 'Carnes y anticuchos a la brasa',
-    phone: '51987654321', // Número del restaurante
+    phone: '51987654321',
     rating: 4.7,
     time: '35-45 min',
     img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600',
@@ -63,8 +83,9 @@ const restaurants = [
   {
     id: 'r4',
     name: 'Jugos y Frutas del Río',
+    category: 'bebidas',
     desc: 'Jugos naturales de la selva',
-    phone: '51987654321', // Número del restaurante
+    phone: '51987654321',
     rating: 4.9,
     time: '15-25 min',
     img: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=600',
@@ -92,6 +113,7 @@ function setBanner(text, type) {
   const b = document.getElementById('locBanner');
   const t = document.getElementById('locBannerText');
   const btn = document.getElementById('locBannerBtn');
+  if(!b) return;
   b.className = 'loc-banner' + (type ? ' ' + type : '');
   t.textContent = text;
   btn.style.display = type === 'ok' ? 'none' : 'inline-block';
@@ -174,42 +196,81 @@ function shippingFor(restaurantId) {
 }
 
 /* ==========================================================
+   NUEVO: DIBUJAR Y FILTRAR CATEGORÍAS
+   ========================================================== */
+function renderCategories() {
+  const container = document.getElementById('categoriesContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  categories.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = `cat-item ${cat.id === selectedCategory ? 'active' : ''}`;
+    item.onclick = () => filterByCategory(cat.id);
+    item.innerHTML = `
+      <div class="cat-icon-box">${cat.icon}</div>
+      <div class="cat-label">${cat.name}</div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function filterByCategory(catId) {
+  selectedCategory = catId;
+  renderCategories();
+  renderRestaurants();
+}
+
+/* ==========================================================
    RENDERIZADO DE COMPONENTES
    ========================================================== */
 function renderRestaurants() {
   const q = (document.getElementById('searchInput').value || '').toLowerCase();
   const grid = document.getElementById('restaurantsGrid');
   grid.innerHTML = '';
-  restaurants
-    .filter(r => !q || r.name.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q))
-    .forEach(r => {
-      const km = distanceCache[r.id];
-      const ship = shippingFor(r.id);
-      const card = document.createElement('div');
-      card.className = 'rest-card';
-      card.onclick = () => openMenu(r.id);
-      card.innerHTML = `
-        <div class="rest-img" style="background-image:url('${r.img}')"></div>
-        <div class="rest-body">
-          <div class="rest-top">
-            <div class="rest-title">${r.name}</div>
-            <div class="rest-rating">★ ${r.rating}</div>
-          </div>
-          <div class="rest-desc">${r.desc}</div>
-          <div class="rest-meta">
-            <span>⏱ ${r.time}</span>
-            ${km != null ? `<span class="rest-dist">📍 ${km.toFixed(1)} km</span>` : `<span>📍 —</span>`}
-            ${ship != null ? `<span class="rest-ship">🛵 S/ ${ship.toFixed(2)}</span>` : ''}
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
+
+  const filtered = restaurants.filter(r => {
+    const matchCategory = (selectedCategory === 'all' || r.category === selectedCategory);
+    const matchQuery = !q || r.name.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q);
+    return matchCategory && matchQuery;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#8a7256;">No se encontraron restaurantes en esta categoría.</div>';
+    return;
+  }
+
+  filtered.forEach(r => {
+    const km = distanceCache[r.id];
+    const ship = shippingFor(r.id);
+    const card = document.createElement('div');
+    card.className = 'rest-card';
+    card.onclick = () => openMenu(r.id);
+    card.innerHTML = `
+      <div class="rest-img" style="background-image:url('${r.img}')"></div>
+      <div class="rest-body">
+        <div class="rest-top">
+          <div class="rest-title">${r.name}</div>
+          <div class="rest-rating">★ ${r.rating}</div>
+        </div>
+        <div class="rest-desc">${r.desc}</div>
+        <div class="rest-meta">
+          <span>⏱ ${r.time}</span>
+          ${km != null ? `<span class="rest-dist">📍 ${km.toFixed(1)} km</span>` : `<span>📍 —</span>`}
+          ${ship != null ? `<span class="rest-ship">🛵 S/ ${ship.toFixed(2)}</span>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
 }
 
 function openMenu(id) {
   currentRestaurantId = id;
   const r = restaurants.find(x => x.id === id);
   document.getElementById('restaurantsSection').style.display = 'none';
+  const catSec = document.querySelector('.categories-section');
+  if(catSec) catSec.style.display = 'none';
+  
   document.getElementById('menuSection').style.display = 'block';
   document.getElementById('menuTitle').textContent = r.name;
   const list = document.getElementById('menuList');
@@ -232,6 +293,8 @@ function openMenu(id) {
 
 function showRestaurants() {
   document.getElementById('menuSection').style.display = 'none';
+  const catSec = document.querySelector('.categories-section');
+  if(catSec) catSec.style.display = 'block';
   document.getElementById('restaurantsSection').style.display = 'block';
 }
 
@@ -329,14 +392,10 @@ function openCheckout() {
 
 function closeCheckout() { document.getElementById('checkoutModal').classList.remove('open'); }
 
-// Configuración de tu número de WhatsApp
-const MY_WHATSAPP_PHONE = '51982780329'; 
-
 function updateShippingPreview() {
   const el = document.getElementById('shippingPreview');
   const ship = currentShipping();
   if (cart.length === 0 || ship == null) { el.classList.remove('show'); return; }
-  // Solo mostramos el costo total del envío, no la distancia ni fórmula
   el.textContent = `Costo de envío: S/ ${ship.toFixed(2)}`;
   el.classList.add('show');
 }
@@ -358,13 +417,11 @@ function confirmOrder() {
   const total = sub + ship;
   const r = restaurants.find(x => x.id === cart[0].restaurantId);
 
-  // 1. Armamos el listado de productos elegidos
   let itemsText = '';
   cart.forEach(c => {
     itemsText += `  • ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
   });
 
-  // 2. Construimos el mensaje enriquecido para WhatsApp
   let msg = `*¡NUEVO PEDIDO EN SABORPUCALLPA!* 🛵💨\n\n`;
   
   msg += `🏪 *DATOS DEL RESTAURANTE*\n`;
@@ -377,9 +434,7 @@ function confirmOrder() {
   msg += `• *Teléfono:* ${phone}\n`;
   msg += `• *Dirección:* ${addr || 'Indicada por GPS'}\n`;
 
-  // Si tenemos la ubicación GPS del cliente, generamos la ruta interactiva
   if (userLocation) {
-    // Genera enlace de ruta desde las coordenadas del local a las del cliente
     const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
     msg += `• *Ubicación Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
     msg += `🗺️ *RUTA EN GOOGLE MAPS:* ${routeUrl}\n`;
@@ -392,11 +447,9 @@ function confirmOrder() {
   msg += `• *TOTAL A PAGAR:* S/ ${total.toFixed(2)}\n\n`;
   msg += `_Método: Pago contra entrega_`;
 
-  // 3. Abrimos la API de WhatsApp
   const waUrl = `https://api.whatsapp.com/send?phone=${MY_WHATSAPP_PHONE}&text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
 
-  // 4. Cerramos formulario y mostramos confirmación
   closeCheckout();
   document.getElementById('ticket').innerHTML = `
     <div><b>Restaurante:</b> ${r.name}</div>
@@ -425,6 +478,7 @@ function showToast(msg) {
 /* ==========================================================
    INICIALIZACIÓN
    ========================================================== */
+renderCategories();
 renderRestaurants();
 updateCartTotals();
 requestLocation(false);

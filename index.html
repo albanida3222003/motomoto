@@ -37,13 +37,22 @@
     <h1>La comida de Pucallpa, a la puerta de tu casa.</h1>
     <p>Elige tu restaurante, arma tu pedido y paga cuando llegue. El envío se calcula automáticamente según tu ubicación.</p>
     <div class="search-box">
-      🔍 <input id="searchInput" placeholder="Buscar restaurante o plato…" oninput="renderRestaurants()">
+    🔍 <input id="searchInput" placeholder="Buscar restaurante o plato…" oninput="renderRestaurants()">
     </div>
   </div>
 </div>
 
+<!-- ➕ AGREGAR ESTA NUEVA SECCIÓN DE CATEGORÍAS AQUÍ -->
+<section class="categories-section">
+  <h3 class="cat-title">¿Qué se te antoja?</h3>
+  <div class="categories-container" id="categoriesContainer">
+    <!-- Se genera dinámicamente con JavaScript -->
+  </div>
+</section>
+<!-- FIN DE NUEVA SECCIÓN -->
+
 <section class="section" id="restaurantsSection">
-  <h2>Restaurantes en Pucallpa</h2>
+  <h2 id="sectionHeading">Restaurantes en Pucallpa</h2>
   <div class="grid" id="restaurantsGrid"></div>
 </section>
 
