@@ -533,7 +533,7 @@ function updateShippingPreview() {
   el.classList.add('show');
 }
 
-// MODIFICADO: Genera mensaje de WhatsApp agrupado por local
+// MODIFICADO: Genera mensaje de WhatsApp con ruta optimizada para el repartidor (Driver)
 function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
@@ -563,7 +563,8 @@ function confirmOrder() {
 
   msg += `\n🛒 *DETALLE DEL PEDIDO Y LOCALES*\n`;
   const uniqueRestIds = [...new Set(cart.map(item => item.restaurantId))];
-  
+  const listRestObjects = uniqueRestIds.map(id => restaurants.find(r => r.id === id));
+
   uniqueRestIds.forEach((restId, idx) => {
     const r = restaurants.find(x => x.id === restId);
     const shipCost = shippingFor(restId) || 0;
@@ -578,6 +579,33 @@ function confirmOrder() {
       msg += `    - ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
     });
   });
+
+  /* ==========================================================
+     🗺️ CONSTRUCCIÓN DE RUTA PARA EL DRIVER / REPARTIDOR
+     ========================================================== */
+  if (userLocation && listRestObjects.length > 0) {
+    msg += `\n🗺️ *RUTA COMPLETA PARA EL DRIVER*\n`;
+
+    if (listRestObjects.length === 1) {
+      // Ruta simple: 1 Local -> Cliente
+      const r = listRestObjects[0];
+      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
+      msg += `• *Ver Ruta:* ${routeUrl}\n`;
+    } else {
+      // Ruta múltiple: Local 1 -> Local 2 (...) -> Cliente
+      const origin = `${listRestObjects[0].lat},${listRestObjects[0].lng}`;
+      const destination = `${userLocation.lat},${userLocation.lng}`;
+      
+      // Los locales intermedios van como "waypoints"
+      const waypoints = listRestObjects
+        .slice(1)
+        .map(r => `${r.lat},${r.lng}`)
+        .join('|');
+
+      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
+      msg += `• *Ruta Multi-recogida:* ${routeUrl}\n`;
+    }
+  }
 
   msg += `\n💵 *RESUMEN TOTAL DE PAGO*\n`;
   msg += `• *Subtotal Platos:* S/ ${sub.toFixed(2)}\n`;
