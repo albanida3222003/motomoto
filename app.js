@@ -18,6 +18,7 @@ const restaurants = [
     id: 'r1',
     name: 'El Aguajal',
     desc: 'Cocina amazónica tradicional',
+    phone: '51987654321', // Número del restaurante
     rating: 4.8,
     time: '25-35 min',
     img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
@@ -33,6 +34,7 @@ const restaurants = [
     id: 'r2',
     name: 'Chifa Amazónico',
     desc: 'Fusión oriental y selvática',
+    phone: '51987654321', // Número del restaurante
     rating: 4.6,
     time: '30-40 min',
     img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
@@ -47,6 +49,7 @@ const restaurants = [
     id: 'r3',
     name: 'Parrilla del Ucayali',
     desc: 'Carnes y anticuchos a la brasa',
+    phone: '51987654321', // Número del restaurante
     rating: 4.7,
     time: '35-45 min',
     img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600',
@@ -61,6 +64,7 @@ const restaurants = [
     id: 'r4',
     name: 'Jugos y Frutas del Río',
     desc: 'Jugos naturales de la selva',
+    phone: '51987654321', // Número del restaurante
     rating: 4.9,
     time: '15-25 min',
     img: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=600',
@@ -354,32 +358,45 @@ function confirmOrder() {
   const total = sub + ship;
   const r = restaurants.find(x => x.id === cart[0].restaurantId);
 
-  // 1. Armamos la lista de platos elegidos
+  // 1. Armamos el listado de productos elegidos
   let itemsText = '';
   cart.forEach(c => {
-    itemsText += `• ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
+    itemsText += `  • ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
   });
 
-  // 2. Construimos el mensaje de WhatsApp bien formateado
-  let msg = `*¡NUEVO PEDIDO EN SABORPUCALLPA!* 🍽️\n\n`;
-  msg += `*Restaurante:* ${r.name}\n`;
-  msg += `*Cliente:* ${name}\n`;
-  msg += `*Teléfono:* ${phone}\n`;
-  msg += `*Dirección:* ${addr || 'Ubicación enviada por GPS'}\n`;
-  if (userLocation) {
-    msg += `*Ubicación GPS:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
-  }
-  msg += `\n*Detalle del pedido:*\n${itemsText}\n`;
-  msg += `*Subtotal:* S/ ${sub.toFixed(2)}\n`;
-  msg += `*Envío:* S/ ${ship.toFixed(2)}\n`;
-  msg += `*TOTAL A PAGAR:* S/ ${total.toFixed(2)}\n\n`;
-  msg += `_Pago contra entrega_`;
+  // 2. Construimos el mensaje enriquecido para WhatsApp
+  let msg = `*¡NUEVO PEDIDO EN SABORPUCALLPA!* 🛵💨\n\n`;
+  
+  msg += `🏪 *DATOS DEL RESTAURANTE*\n`;
+  msg += `• *Nombre:* ${r.name}\n`;
+  msg += `• *Teléfono:* +${r.phone || 'No especificado'}\n`;
+  msg += `• *Ubicación Local:* https://maps.google.com/?q=${r.lat},${r.lng}\n\n`;
 
-  // 3. Abrimos la API oficial de WhatsApp
+  msg += `👤 *DATOS DEL CLIENTE*\n`;
+  msg += `• *Nombre:* ${name}\n`;
+  msg += `• *Teléfono:* ${phone}\n`;
+  msg += `• *Dirección:* ${addr || 'Indicada por GPS'}\n`;
+
+  // Si tenemos la ubicación GPS del cliente, generamos la ruta interactiva
+  if (userLocation) {
+    // Genera enlace de ruta desde las coordenadas del local a las del cliente
+    const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
+    msg += `• *Ubicación Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+    msg += `🗺️ *RUTA EN GOOGLE MAPS:* ${routeUrl}\n`;
+  }
+  
+  msg += `\n🛒 *DETALLE DEL PEDIDO*\n${itemsText}\n`;
+  msg += `💵 *RESUMEN DE PAGO*\n`;
+  msg += `• *Subtotal:* S/ ${sub.toFixed(2)}\n`;
+  msg += `• *Envío:* S/ ${ship.toFixed(2)}\n`;
+  msg += `• *TOTAL A PAGAR:* S/ ${total.toFixed(2)}\n\n`;
+  msg += `_Método: Pago contra entrega_`;
+
+  // 3. Abrimos la API de WhatsApp
   const waUrl = `https://api.whatsapp.com/send?phone=${MY_WHATSAPP_PHONE}&text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
 
-  // 4. Mostramos el modal de éxito local
+  // 4. Cerramos formulario y mostramos confirmación
   closeCheckout();
   document.getElementById('ticket').innerHTML = `
     <div><b>Restaurante:</b> ${r.name}</div>
