@@ -27,6 +27,20 @@ const categories = [
 
 let selectedCategory = 'all';
 
+// Banners de Promociones (imágenes publicitarias)
+const promotions = [
+  {
+    id: 'p1',
+    img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600', // Reemplazarás con tus URLs de promos
+    restaurantId: 'r1'
+  },
+  {
+    id: 'p2',
+    img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
+    restaurantId: 'r2'
+  }
+];
+
 /* ==========================================================
    SIMULACIÓN DE BASE DE DATOS (CON CATEGORÍAS)
    ========================================================== */
@@ -215,6 +229,22 @@ function renderCategories() {
   });
 }
 
+function renderPromotions() {
+  const container = document.getElementById('promosCarousel');
+  if (!container) return;
+  container.innerHTML = '';
+
+  promotions.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'promo-card';
+    card.onclick = () => {
+      if(p.restaurantId) openMenu(p.restaurantId);
+    };
+    card.innerHTML = `<img src="${p.img}" alt="Promoción">`;
+    container.appendChild(card);
+  });
+}
+
 function filterByCategory(catId) {
   selectedCategory = catId;
   renderCategories();
@@ -265,6 +295,12 @@ function renderRestaurants() {
 }
 
 function openMenu(id) {
+  // Dentro de openMenu(id):
+  const servSec = document.querySelector('.services-section');
+  const promoSec = document.querySelector('.promos-section');
+  if(servSec) servSec.style.display = 'none';
+  if(promoSec) promoSec.style.display = 'none';
+
   currentRestaurantId = id;
   const r = restaurants.find(x => x.id === id);
   document.getElementById('restaurantsSection').style.display = 'none';
@@ -292,6 +328,12 @@ function openMenu(id) {
 }
 
 function showRestaurants() {
+  // Dentro de showRestaurants():
+  const servSec = document.querySelector('.services-section');
+  const promoSec = document.querySelector('.promos-section');
+  if(servSec) servSec.style.display = 'block';
+  if(promoSec) promoSec.style.display = 'block';
+  
   document.getElementById('menuSection').style.display = 'none';
   const catSec = document.querySelector('.categories-section');
   if(catSec) catSec.style.display = 'block';
@@ -478,7 +520,9 @@ function showToast(msg) {
 /* ==========================================================
    INICIALIZACIÓN
    ========================================================== */
+// Al final del archivo app.js:
 renderCategories();
+renderPromotions(); // 👈 AGREGAR ESTA LÍNEA
 renderRestaurants();
 updateCartTotals();
 requestLocation(false);

@@ -51,6 +51,41 @@
 </section>
 <!-- FIN DE NUEVA SECCIÓN -->
 
+<!-- SECCIÓN 1: SERVICIOS / PASAJERO -->
+<section class="services-section">
+  <h3 class="section-title">MOTOMOTO SERVICIOS</h3>
+  <div class="services-banner">
+    <div class="services-header">
+      <div>
+        <h4>¿Necesitas moverte o enviar algo? <span class="badge-new">NUEVO</span></h4>
+        <p>Tú pones el precio: Transporte, Mudanza o Entregas al instante.</p>
+      </div>
+    </div>
+    <div class="services-grid">
+      <div class="service-card" onclick="showToast('Servicio de Transporte disponible pronto')">
+        <span class="service-icon">🛺</span>
+        <span>TRANSPORTE</span>
+      </div>
+      <div class="service-card" onclick="showToast('Servicio de Carga disponible pronto')">
+        <span class="service-icon">🚚</span>
+        <span>CARGA/MUDANZA</span>
+      </div>
+      <div class="service-card" onclick="showToast('Servicio de Envíos activo')">
+        <span class="service-icon">📦</span>
+        <span>ENTREGAS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN 2: PROMOCIONES (CARRUSEL DE BANNERS) -->
+<section class="promos-section">
+  <h3 class="section-title">PROMOCIONES EXCLUSIVAS</h3>
+  <div class="promos-carousel" id="promosCarousel">
+    <!-- Se generará dinámicamente con JS -->
+  </div>
+</section>
+
 <section class="section" id="restaurantsSection">
   <h2 id="sectionHeading">Restaurantes en Pucallpa</h2>
   <div class="grid" id="restaurantsGrid"></div>

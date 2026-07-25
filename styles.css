@@ -851,3 +851,131 @@ header.site {
     padding-right: 16px;
   }
 }
+
+/* ==========================================================
+   NUEVO: SECCIÓN DE SERVICIOS Y PROMOCIONES
+   ========================================================== */
+.section-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2b3a28;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* Banner de Servicios */
+.services-section, .promos-section {
+  padding: 10px 28px;
+}
+
+.services-banner {
+  background: linear-gradient(135deg, #1e7e34, #28a745);
+  border-radius: 16px;
+  padding: 16px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.services-header h4 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-new {
+  background: #ffc107;
+  color: #000;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.services-header p {
+  margin: 0 0 14px 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.service-card {
+  background: white;
+  color: #1e7e34;
+  border-radius: 12px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 10px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-2px);
+}
+
+.service-icon {
+  font-size: 20px;
+}
+
+/* Carrusel de Promociones */
+.promos-carousel {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.promos-carousel::-webkit-scrollbar {
+  height: 4px;
+}
+
+.promos-carousel::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.promo-card {
+  flex: 0 0 280px;
+  height: 140px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.promo-card:hover {
+  transform: scale(1.02);
+}
+
+.promo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media(max-width: 640px) {
+  .services-section, .promos-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .promo-card {
+    flex: 0 0 240px;
+    height: 120px;
+  }
+}
