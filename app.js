@@ -123,15 +123,112 @@ let distanceCache = {};
 /* ==========================================================
    GEOLOCALIZACIÓN
    ========================================================== */
+
+/* ==========================================================
+   MAPA INTERACTIVO DE UBICACIÓN (LEAFLET.JS)
+   ========================================================== */
+let mapInstance = null;
+let mapMarker = null;
+let tempSelectedCoords = null;
+
+// Centro de Pucallpa por defecto si no hay GPS activo
+const PUCALLPA_CENTER = { lat: -8.3791, lng: -74.5539 };
+
+function openMapPicker() {
+  const modal = document.getElementById('mapModal');
+  if (!modal) return;
+  modal.classList.add('open');
+
+  // Retardo para asegurar que el contenedor HTML del mapa ya existe antes de renderizar Leaflet
+  setTimeout(() => {
+    const initialLat = userLocation ? userLocation.lat : PUCALLPA_CENTER.lat;
+    const initialLng = userLocation ? userLocation.lng : PUCALLPA_CENTER.lng;
+
+    if (!mapInstance) {
+      // Crear mapa Leaflet centrando en Pucallpa
+      mapInstance = L.map('interactiveMap').setView([initialLat, initialLng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(mapInstance);
+
+      // Marcador arrastrable (Pin)
+      mapMarker = L.marker([initialLat, initialLng], { draggable: true }).addTo(mapInstance);
+
+      // Evento: Al arrastrar el pin
+      mapMarker.on('dragend', function () {
+        const pos = mapMarker.getLatLng();
+        updateTempCoords(pos.lat, pos.lng);
+      });
+
+      // Evento: Al hacer toque/clic en cualquier punto del mapa
+      mapInstance.on('click', function (e) {
+        mapMarker.setLatLng(e.latlng);
+        updateTempCoords(e.latlng.lat, e.latlng.lng);
+      });
+    } else {
+      mapInstance.setView([initialLat, initialLng], 15);
+      mapMarker.setLatLng([initialLat, initialLng]);
+      mapInstance.invalidateSize(); // Refrescar dimensiones del mapa
+    }
+
+    updateTempCoords(initialLat, initialLng);
+  }, 250);
+}
+
+function updateTempCoords(lat, lng) {
+  tempSelectedCoords = { lat, lng };
+  const txt = document.getElementById('selectedCoordsText');
+  if (txt) {
+    txt.textContent = `📍 Ubicación fijada: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+}
+
+function confirmMapLocation() {
+  if (tempSelectedCoords) {
+    userLocation = { ...tempSelectedCoords };
+    distanceCache = {}; // Limpiar caché para recalcular los deliveries
+
+    setBanner('📍 Ubicación confirmada manualmente en el mapa.', 'ok');
+
+    // Recalcular distancias de todos los locales y refrescar precios
+    recomputeAllDistances().then(() => {
+      renderRestaurants();
+      updateCartTotals();
+      updateShippingPreview();
+    });
+
+    showToast('📍 Ubicación guardada con éxito');
+  }
+  closeMapModal();
+}
+
+function closeMapModal() {
+  const modal = document.getElementById('mapModal');
+  if (modal) modal.classList.remove('open');
+}
+
 function setBanner(text, type) {
   const b = document.getElementById('locBanner');
   const t = document.getElementById('locBannerText');
   const btn = document.getElementById('locBannerBtn');
   if(!b) return;
+
   b.className = 'loc-banner' + (type ? ' ' + type : '');
-  t.textContent = text;
-  btn.style.display = type === 'ok' ? 'none' : 'inline-block';
-  btn.textContent = type === 'err' ? 'Reintentar' : 'Actualizar';
+  
+  // HTML con el texto y los botones (GPS + Mapa)
+  t.innerHTML = `${text} 
+    <div style="margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap;">
+      <button onclick="requestLocation(true)" style="background: #1b6329; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+        ${type === 'err' ? 'Reintentar GPS' : 'Actualizar GPS'}
+      </button>
+      <button onclick="openMapPicker()" style="background: #ff6600; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+        Elegir en mapa 🗺️
+      </button>
+    </div>`;
+  
+  if (btn) btn.style.display = 'none'; // Ocultamos el botón antiguo ya que creamos la botonera arriba
   b.style.display = 'flex';
 }
 
@@ -501,8 +598,16 @@ function closeCart() { document.getElementById('overlay').classList.remove('open
    PROCESO DE CHECKOUT Y CONFIRMACIÓN
    ========================================================== */
 // MODIFICADO: Soporte multi-envío en el modal
+// MODIFICADO: Muestra opción de abrir mapa en Checkout si no hay GPS
 function openCheckout() {
   if (cart.length === 0) return;
+
+  if (!userLocation) {
+    showToast('📍 Por favor, selecciona tu ubicación en el mapa primero');
+    openMapPicker(); // Abre el mapa directamente para facilitar la vida al cliente
+    return;
+  }
+
   closeCart();
   
   const sub = cartSubtotal();

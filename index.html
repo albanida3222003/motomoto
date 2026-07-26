@@ -6,6 +6,10 @@
   <title>SaborPucallpa — Delivery</title>
   <!-- Vinculamos el CSS externo -->
   <link rel="stylesheet" href="styles.css">
+  <!-- CSS de Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- JS de Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -185,5 +189,25 @@
 
 <!-- Vinculamos el JS externo al final para asegurar la carga del DOM -->
 <script src="app.js"></script>
+
+<!-- MODAL SELECTOR DE UBICACIÓN EN MAPA -->
+<div id="mapModal" class="modal">
+  <div class="modal-content map-modal-content">
+    <div class="map-header">
+      <h3>Confirmar tu ubicación</h3>
+      <p>Mueve el mapa para colocar el pin en el lugar exacto de tu casa</p>
+    </div>
+    
+    <!-- Contenedor del Mapa -->
+    <div id="interactiveMap" style="height: 350px; width: 100%; border-radius: 12px;"></div>
+    
+    <div class="map-footer">
+      <div id="selectedCoordsText" class="coords-info">📍 Buscando ubicación...</div>
+      <button class="btn-confirm-map" onclick="confirmMapLocation()">Confirmar esta ubicación</button>
+      <button class="btn-cancel-map" onclick="closeMapModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

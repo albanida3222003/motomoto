@@ -1043,3 +1043,54 @@ header.site {
     display: none; /* En celular se desliza con el dedo */
   }
 }
+
+/* Modal de Mapa Interactivo */
+.map-modal-content {
+  max-width: 500px;
+  padding: 15px;
+  border-radius: 16px;
+}
+.map-header h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  color: #2c2c2c;
+}
+.map-header p {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #666;
+}
+.map-footer {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.coords-info {
+  font-size: 13px;
+  font-weight: bold;
+  color: #1b6329;
+  text-align: center;
+  background: #e8f5e9;
+  padding: 8px;
+  border-radius: 8px;
+}
+.btn-confirm-map {
+  background-color: #ff6600; /* Estilo estilo LlamaFood / Pedidos */
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn-cancel-map {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+}
