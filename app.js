@@ -533,6 +533,7 @@ function updateShippingPreview() {
   el.classList.add('show');
 }
 
+// MODIFICADO: Genera el mensaje de WhatsApp con formato de ruta por barras (Funciona 100% en la App)
 function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
@@ -557,7 +558,7 @@ function confirmOrder() {
   msg += `• *Dirección:* ${addr || 'Indicada por GPS'}\n`;
 
   if (userLocation) {
-    msg += `• *Ubicación Casa Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+    msg += `• *Ubicación Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
   }
 
   msg += `\n🛒 *DETALLE DEL PEDIDO Y LOCALES*\n`;
@@ -581,28 +582,21 @@ function confirmOrder() {
   });
 
   /* ==========================================================
-     🗺️ RUTA OPTIMIZADA PARA DRIVER (CON OPTIMIZE:TRUE)
+     🗺️ CORRECCIÓN DEFINITIVA DE RUTA MULTI-LOCAL PARA GOOGLE MAPS
      ========================================================== */
   if (userLocation && listRestObjects.length > 0) {
     msg += `\n🗺️ *RUTA EN MAPA PARA EL DRIVER*\n`;
 
-    if (listRestObjects.length === 1) {
-      const r = listRestObjects[0];
-      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
-      msg += `• *Ruta Directa:* ${routeUrl}\n`;
-    } else {
-      const origin = `${listRestObjects[0].lat},${listRestObjects[0].lng}`;
-      const destination = `${userLocation.lat},${userLocation.lng}`;
-      
-      // Agregamos optimize:true para que Google Maps ordene las paradas de forma eficiente
-      const waypointsStr = 'optimize:true|' + listRestObjects
-        .slice(1)
-        .map(r => `${r.lat},${r.lng}`)
-        .join('|');
+    // 1. Array con las coordenadas de todos los locales
+    const points = listRestObjects.map(r => `${r.lat},${r.lng}`);
+    
+    // 2. Añadimos la casa del cliente al final como destino
+    points.push(`${userLocation.lat},${userLocation.lng}`);
 
-      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`;
-      msg += `• *Ruta Optimizada (${listRestObjects.length} locales ➔ Cliente):*\n${routeUrl}\n`;
-    }
+    // 3. Unimos todo con slashes "/" (Formato nativo de Google Maps App)
+    const routeUrl = `https://www.google.com/maps/dir/${points.join('/')}`;
+    
+    msg += `• *Abrir Ruta de Recogida y Entrega:*\n${routeUrl}\n`;
   }
 
   msg += `\n💵 *RESUMEN TOTAL DE PAGO*\n`;
