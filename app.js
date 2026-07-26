@@ -533,7 +533,6 @@ function updateShippingPreview() {
   el.classList.add('show');
 }
 
-// MODIFICADO: Genera el mensaje de WhatsApp con la ruta multi-local corregida para Google Maps
 function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
@@ -558,7 +557,7 @@ function confirmOrder() {
   msg += `• *Dirección:* ${addr || 'Indicada por GPS'}\n`;
 
   if (userLocation) {
-    msg += `• *Ubicación Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+    msg += `• *Ubicación Casa Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
   }
 
   msg += `\n🛒 *DETALLE DEL PEDIDO Y LOCALES*\n`;
@@ -569,9 +568,10 @@ function confirmOrder() {
     const r = restaurants.find(x => x.id === restId);
     const shipCost = shippingFor(restId) || 0;
     
-    msg += `\n📍 *LOCAL ${idx + 1}: ${r.name}*\n`;
-    msg += `  • Teléfono local: +${r.phone || 'N/A'}\n`;
-    msg += `  • Envío este local: S/ ${shipCost.toFixed(2)}\n`;
+    msg += `\n📍 *RECOGIDA ${idx + 1}: ${r.name}*\n`;
+    msg += `  • GPS Local: https://maps.google.com/?q=${r.lat},${r.lng}\n`;
+    msg += `  • Teléfono: +${r.phone || 'N/A'}\n`;
+    msg += `  • Envío local: S/ ${shipCost.toFixed(2)}\n`;
     msg += `  • Platos:\n`;
 
     const items = cart.filter(c => c.restaurantId === restId);
@@ -581,33 +581,27 @@ function confirmOrder() {
   });
 
   /* ==========================================================
-     🗺️ CORRECCIÓN DE LA RUTA PARA 3 O MÁS LOCALES (GOOGLE MAPS)
+     🗺️ RUTA OPTIMIZADA PARA DRIVER (CON OPTIMIZE:TRUE)
      ========================================================== */
   if (userLocation && listRestObjects.length > 0) {
-    msg += `\n🗺️ *RUTA OPTIMIZADA PARA EL DRIVER*\n`;
+    msg += `\n🗺️ *RUTA EN MAPA PARA EL DRIVER*\n`;
 
     if (listRestObjects.length === 1) {
-      // 1 Local -> Cliente
       const r = listRestObjects[0];
       const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
-      msg += `• *Ver Ruta:* ${routeUrl}\n`;
+      msg += `• *Ruta Directa:* ${routeUrl}\n`;
     } else {
-      // 2 o MÁS Locales -> Cliente
-      // Origen: Primer restaurante
       const origin = `${listRestObjects[0].lat},${listRestObjects[0].lng}`;
-      
-      // Destino final: Casa del cliente
       const destination = `${userLocation.lat},${userLocation.lng}`;
       
-      // Paradas intermedias: Todos los demás restaurantes ordenados
-      const waypoints = listRestObjects
+      // Agregamos optimize:true para que Google Maps ordene las paradas de forma eficiente
+      const waypointsStr = 'optimize:true|' + listRestObjects
         .slice(1)
         .map(r => `${r.lat},${r.lng}`)
         .join('|');
 
-      // Se usa encodeURIComponent para asegurar que el símbolo | no rompa la URL en WhatsApp
-      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`;
-      msg += `• *Ruta Multi-recogida (${listRestObjects.length} locales):* ${routeUrl}\n`;
+      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`;
+      msg += `• *Ruta Optimizada (${listRestObjects.length} locales ➔ Cliente):*\n${routeUrl}\n`;
     }
   }
 
