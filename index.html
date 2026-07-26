@@ -4,11 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>SaborPucallpa — Delivery</title>
-  <!-- Vinculamos el CSS externo -->
-  <link rel="stylesheet" href="styles.css">
-  <!-- CSS de Leaflet -->
+
+  <!-- Estilos propios, separados por componente -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/categories.css">
+  <link rel="stylesheet" href="css/services-promos.css">
+  <link rel="stylesheet" href="css/restaurants.css">
+  <link rel="stylesheet" href="css/cart-checkout.css">
+  <link rel="stylesheet" href="css/map-modal.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Leaflet (mapa interactivo) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- JS de Leaflet -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
@@ -22,17 +31,16 @@
     </div>
   </div>
   <div class="header-right">
-    <button class="pill cart" onclick="openCart()">
+    <button class="pill cart" id="cartOpenBtn">
       🛒 <span>Mi pedido</span>
       <span class="cart-count" id="cartCount">0</span>
     </button>
   </div>
 </header>
 
-<!-- Banner de ubicación -->
+<!-- Banner de ubicación (el contenido de texto/botones se genera en geolocation.js) -->
 <div class="loc-banner" id="locBanner">
   📍 <span id="locBannerText">Solicitando tu ubicación para calcular el envío…</span>
-  <button onclick="requestLocation(true)" id="locBannerBtn">Reintentar</button>
 </div>
 
 <div class="hero-wrap">
@@ -41,24 +49,20 @@
     <h1>La comida de Pucallpa, a la puerta de tu casa.</h1>
     <p>Elige tu restaurante, arma tu pedido y paga cuando llegue. El envío se calcula automáticamente según tu ubicación.</p>
     <div class="search-box">
-    🔍 <input id="searchInput" placeholder="Buscar restaurante o plato…" oninput="renderRestaurants()">
+      🔍 <input id="searchInput" placeholder="Buscar restaurante o plato…">
     </div>
   </div>
 </div>
 
-<!-- ➕ AGREGAR ESTA NUEVA SECCIÓN DE CATEGORÍAS AQUÍ -->
 <section class="categories-section">
   <h3 class="cat-title">¿Qué se te antoja?</h3>
   <div class="categories-container" id="categoriesContainer">
-    <!-- Se genera dinámicamente con JavaScript -->
+    <!-- Se genera dinámicamente en render.js -->
   </div>
 </section>
-<!-- FIN DE NUEVA SECCIÓN -->
 
-<!-- CONTENEDOR UNIFICADO CON TIPOGRAFÍA Y FLECHAS -->
 <div class="layout-services-promos">
 
-  <!-- SECCIÓN SERVICIOS -->
   <section class="services-section">
     <h3 class="section-title">MOTOMOTO SERVICIOS</h3>
     <div class="services-banner">
@@ -67,15 +71,15 @@
         <p>¡Tú pones el precio! Pide un Transporte, Carga/Mudanza o Entregas al instante.</p>
       </div>
       <div class="services-grid">
-        <div class="service-card" onclick="showToast('Servicio de Transporte')">
+        <div class="service-card" data-service-label="Servicio de Transporte">
           <span class="service-icon">🛺</span>
           <span>TRANSPORTE</span>
         </div>
-        <div class="service-card" onclick="showToast('Servicio de Carga/Mudanza')">
+        <div class="service-card" data-service-label="Servicio de Carga/Mudanza">
           <span class="service-icon">🚚</span>
           <span>CARGA/MUDANZA</span>
         </div>
-        <div class="service-card" onclick="showToast('Servicio de Entregas')">
+        <div class="service-card" data-service-label="Servicio de Entregas">
           <span class="service-icon">📦</span>
           <span>ENTREGAS</span>
         </div>
@@ -83,15 +87,14 @@
     </div>
   </section>
 
-  <!-- SECCIÓN PROMOCIONES CON FLECHAS -->
   <section class="promos-section">
     <h3 class="section-title">PROMOCIONES SOLO POR MOTOMOTO</h3>
     <div class="promos-wrapper">
-      <button class="nav-arrow prev" onclick="scrollPromos(-1)">‹</button>
+      <button class="nav-arrow prev" id="promosPrevBtn">‹</button>
       <div class="promos-carousel" id="promosCarousel">
-        <!-- Generado dinámicamente -->
+        <!-- Generado dinámicamente en render.js -->
       </div>
-      <button class="nav-arrow next" onclick="scrollPromos(1)">›</button>
+      <button class="nav-arrow next" id="promosNextBtn">›</button>
     </div>
   </section>
 
@@ -104,26 +107,25 @@
 
 <section class="section" id="menuSection" style="display:none;">
   <div class="menu-header">
-    <button class="back-btn" onclick="showRestaurants()">← Restaurantes</button>
+    <button class="back-btn" id="backToRestaurantsBtn">← Restaurantes</button>
     <h2 id="menuTitle" style="margin:0;"></h2>
   </div>
   <div id="menuList"></div>
 </section>
 
 <!-- Carrito (Drawer) -->
-<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
     <h3>Mi pedido</h3>
-    <button class="close-x" onclick="closeCart()">✕</button>
+    <button class="close-x" id="cartCloseBtn">✕</button>
   </div>
   <div class="drawer-body" id="cartBody"></div>
   <div class="drawer-foot">
     <div class="total-row"><span>Subtotal</span><span id="cartSubtotal">S/ 0.00</span></div>
     <div class="total-row"><span>Envío</span><span id="cartShipping">—</span></div>
-    <!-- Se removió el texto de cálculo base/km -->
     <div class="total-row grand"><span>Total</span><span id="cartTotal">S/ 0.00</span></div>
-    <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()">Continuar pedido</button>
+    <button class="checkout-btn" id="checkoutBtn">Continuar pedido</button>
   </div>
 </aside>
 
@@ -136,7 +138,7 @@
     <div class="field">
       <label>Ubicación de entrega</label>
       <input id="addrInput" placeholder="Ingresa tu dirección (referencia)">
-      <button class="geo-btn" type="button" onclick="requestLocation(true)">📍 Usar mi ubicación actual</button>
+      <button class="geo-btn" type="button" id="geoBtn">📍 Usar mi ubicación actual</button>
       <div class="shipping-preview" id="shippingPreview"></div>
       <div class="err" id="addrErr">Ingresa tu dirección o comparte tu ubicación.</div>
     </div>
@@ -160,8 +162,8 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeCheckout()">Cancelar</button>
-      <button class="btn-confirm" onclick="confirmOrder()">Confirmar pedido</button>
+      <button class="btn-cancel" id="checkoutCancelBtn">Cancelar</button>
+      <button class="btn-confirm" id="checkoutConfirmBtn">Confirmar pedido</button>
     </div>
   </div>
 </div>
@@ -175,8 +177,29 @@
       <p style="font-size:13px;color:#8a7256;">Te escribiremos por WhatsApp para confirmar la entrega.</p>
       <div class="ticket" id="ticket"></div>
       <div class="modal-actions" style="margin-top:16px;">
-        <button class="btn-confirm" onclick="finishOrder()">Listo</button>
+        <button class="btn-confirm" id="confirmFinishBtn">Listo</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Selector de ubicación en mapa -->
+<!-- CORREGIDO: antes tenía class="modal" (sin estilos de overlay), ahora usa
+     "modal-back" para el fondo oscuro + "modal" para la caja blanca, igual
+     que los otros modales. Antes el mapa nunca se ocultaba correctamente. -->
+<div class="modal-back" id="mapModal">
+  <div class="modal map-modal-content">
+    <div class="map-header">
+      <h3>Confirmar tu ubicación</h3>
+      <p>Mueve el mapa para colocar el pin en el lugar exacto de tu casa</p>
+    </div>
+
+    <div id="interactiveMap" style="height: 350px; width: 100%; border-radius: 12px;"></div>
+
+    <div class="map-footer">
+      <div id="selectedCoordsText" class="coords-info">📍 Buscando ubicación...</div>
+      <button class="btn-confirm-map" id="mapConfirmBtn">Confirmar esta ubicación</button>
+      <button class="btn-cancel-map" id="mapCancelBtn">Cancelar</button>
     </div>
   </div>
 </div>
@@ -187,27 +210,11 @@
   SaborPucallpa · Prototipo de delivery local
 </footer>
 
-<!-- Vinculamos el JS externo al final para asegurar la carga del DOM -->
-<script src="app.js"></script>
-
-<!-- MODAL SELECTOR DE UBICACIÓN EN MAPA -->
-<div id="mapModal" class="modal">
-  <div class="modal-content map-modal-content">
-    <div class="map-header">
-      <h3>Confirmar tu ubicación</h3>
-      <p>Mueve el mapa para colocar el pin en el lugar exacto de tu casa</p>
-    </div>
-    
-    <!-- Contenedor del Mapa -->
-    <div id="interactiveMap" style="height: 350px; width: 100%; border-radius: 12px;"></div>
-    
-    <div class="map-footer">
-      <div id="selectedCoordsText" class="coords-info">📍 Buscando ubicación...</div>
-      <button class="btn-confirm-map" onclick="confirmMapLocation()">Confirmar esta ubicación</button>
-      <button class="btn-cancel-map" onclick="closeMapModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
+<!-- Módulo de entrada. type="module" habilita import/export nativos del
+     navegador, sin necesidad de build tools. IMPORTANTE: por seguridad,
+     los navegadores bloquean módulos ES6 abiertos con file://, así que
+     este proyecto debe servirse con un servidor local (ver README.md). -->
+<script type="module" src="js/main.js"></script>
 
 </body>
 </html>

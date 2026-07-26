@@ -1,0 +1,37 @@
+/* ==========================================================
+   RESPONSIVE (MÓVIL / DESKTOP)
+   Se carga al final para tener prioridad de cascada sobre
+   los estilos base de cada componente.
+   ========================================================== */
+@media(max-width: 640px) {
+  header.site, .loc-banner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .hero-wrap, .section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .hero {
+    padding: 22px;
+    min-height: 210px;
+    border-radius: 16px;
+  }
+  .hero h1 {
+    font-size: 24px;
+  }
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .rest-img {
+    height: 100px;
+  }
+  .categories-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .nav-arrow {
+    display: none; /* En celular se desliza con el dedo */
+  }
+}

@@ -1,0 +1,131 @@
+/* ==========================================================
+   HEADER Y BANNER DE UBICACIÓN
+   ========================================================== */
+header.site {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--clay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: .03em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill {
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: .15s transform;
+}
+
+.pill:active {
+  transform: scale(.95);
+}
+
+.pill.cart {
+  background: var(--clay);
+  color: white;
+  border: none;
+  position: relative;
+}
+
+.cart-count {
+  background: var(--ink);
+  color: white;
+  border-radius: 999px;
+  font-size: 11px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.cart-count.bump {
+  animation: bump .35s ease;
+}
+
+@keyframes bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+/* Banner Ubicación */
+.loc-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 28px;
+  font-size: 13px;
+  background: var(--cream-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.loc-banner.ok {
+  background: #e8f0dc;
+  color: var(--leaf-dark);
+}
+
+.loc-banner.err {
+  background: #fbe3d6;
+  color: var(--clay-dark);
+}
+
+.loc-banner button {
+  margin-left: auto;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}

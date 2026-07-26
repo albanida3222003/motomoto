@@ -1,0 +1,75 @@
+/* ==========================================================
+   CARRUSEL DE CATEGORÍAS ("¿Qué se te antoja?")
+   ========================================================== */
+.categories-section {
+  padding: 16px 28px 10px;
+}
+
+.cat-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.categories-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.categories-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.categories-container::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.cat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 72px;
+}
+
+.cat-icon-box {
+  width: 60px;
+  height: 60px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  transition: all .2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.cat-item:hover .cat-icon-box,
+.cat-item.active .cat-icon-box {
+  background: var(--leaf);
+  color: white;
+  border-color: var(--leaf);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(75,107,58,0.25);
+}
+
+.cat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+}
+
+.cat-item.active .cat-label {
+  color: var(--leaf-dark);
+}
