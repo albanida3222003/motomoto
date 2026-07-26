@@ -533,18 +533,40 @@ function updateShippingPreview() {
   el.classList.add('show');
 }
 
-// MODIFICADO: Genera el mensaje de WhatsApp con formato de ruta por barras (Funciona 100% en la App)
+/* ==========================================================
+   PROCESO DE CHECKOUT Y CONFIRMACIÓN (CON VALIDACIÓN DE GPS)
+   ========================================================== */
 function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
   
-  document.getElementById('addrErr').style.display = (!addr && !userLocation) ? 'block' : 'none';
-  document.getElementById('nameErr').style.display = !name ? 'block' : 'none';
+  // Validaciones básicas de campos
+  const nameOk = name.length > 0;
   const phoneOk = /^\d{9}$/.test(phone);
+
+  document.getElementById('nameErr').style.display = !nameOk ? 'block' : 'none';
   document.getElementById('phoneErr').style.display = !phoneOk ? 'block' : 'none';
-  
-  if ((!addr && !userLocation) || !name || !phoneOk) return;
+
+  if (!nameOk || !phoneOk) return;
+
+  // 📍 VALIDACIÓN AMIGABLE DE UBICACIÓN / GPS
+  if (!userLocation) {
+    // Si no se ha detectado el GPS y tampoco escribió una dirección/referencia clara
+    if (!addr || addr.length < 5) {
+      document.getElementById('addrErr').style.display = 'block';
+      document.getElementById('addrErr').textContent = '⚠️ Por favor, presiona "Obtener Ubicación" arriba o escribe tu dirección exacta con referencias.';
+      
+      // Toast / Notificación emergente amigable
+      showToast('📍 Necesitamos tu ubicación GPS para calcular el envío');
+      
+      // Enfocar el campo de dirección para guiar al usuario
+      document.getElementById('addrInput').focus();
+      return;
+    }
+  }
+
+  document.getElementById('addrErr').style.display = 'none';
 
   const sub = cartSubtotal();
   const { list, totalShipping } = getShippingBreakdown();
@@ -555,10 +577,12 @@ function confirmOrder() {
   msg += `👤 *DATOS DEL CLIENTE*\n`;
   msg += `• *Nombre:* ${name}\n`;
   msg += `• *Teléfono:* ${phone}\n`;
-  msg += `• *Dirección:* ${addr || 'Indicada por GPS'}\n`;
+  msg += `• *Dirección / Ref:* ${addr || 'Indicada por GPS'}\n`;
 
   if (userLocation) {
-    msg += `• *Ubicación Cliente:* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+    msg += `• *Ubicación Cliente (GPS):* https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}\n`;
+  } else {
+    msg += `• *Ubicación GPS:* _No compartida (Ver dirección escrita arriba)_\n`;
   }
 
   msg += `\n🛒 *DETALLE DEL PEDIDO Y LOCALES*\n`;
@@ -582,21 +606,15 @@ function confirmOrder() {
   });
 
   /* ==========================================================
-     🗺️ CORRECCIÓN DEFINITIVA DE RUTA MULTI-LOCAL PARA GOOGLE MAPS
+     🗺️ RUTA MULTI-LOCAL PARA GOOGLE MAPS
      ========================================================== */
   if (userLocation && listRestObjects.length > 0) {
     msg += `\n🗺️ *RUTA EN MAPA PARA EL DRIVER*\n`;
-
-    // 1. Array con las coordenadas de todos los locales
     const points = listRestObjects.map(r => `${r.lat},${r.lng}`);
-    
-    // 2. Añadimos la casa del cliente al final como destino
     points.push(`${userLocation.lat},${userLocation.lng}`);
 
-    // 3. Unimos todo con slashes "/" (Formato nativo de Google Maps App)
     const routeUrl = `https://www.google.com/maps/dir/${points.join('/')}`;
-    
-    msg += `• *Abrir Ruta de Recogida y Entrega:*\n${routeUrl}\n`;
+    msg += `• *Abrir Ruta en Google Maps:*\n${routeUrl}\n`;
   }
 
   msg += `\n💵 *RESUMEN TOTAL DE PAGO*\n`;
