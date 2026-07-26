@@ -533,7 +533,7 @@ function updateShippingPreview() {
   el.classList.add('show');
 }
 
-// MODIFICADO: Genera mensaje de WhatsApp con ruta optimizada para el repartidor (Driver)
+// MODIFICADO: Genera el mensaje de WhatsApp con la ruta multi-local corregida para Google Maps
 function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
@@ -581,29 +581,33 @@ function confirmOrder() {
   });
 
   /* ==========================================================
-     🗺️ CONSTRUCCIÓN DE RUTA PARA EL DRIVER / REPARTIDOR
+     🗺️ CORRECCIÓN DE LA RUTA PARA 3 O MÁS LOCALES (GOOGLE MAPS)
      ========================================================== */
   if (userLocation && listRestObjects.length > 0) {
-    msg += `\n🗺️ *RUTA COMPLETA PARA EL DRIVER*\n`;
+    msg += `\n🗺️ *RUTA OPTIMIZADA PARA EL DRIVER*\n`;
 
     if (listRestObjects.length === 1) {
-      // Ruta simple: 1 Local -> Cliente
+      // 1 Local -> Cliente
       const r = listRestObjects[0];
       const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${r.lat},${r.lng}&destination=${userLocation.lat},${userLocation.lng}&travelmode=driving`;
       msg += `• *Ver Ruta:* ${routeUrl}\n`;
     } else {
-      // Ruta múltiple: Local 1 -> Local 2 (...) -> Cliente
+      // 2 o MÁS Locales -> Cliente
+      // Origen: Primer restaurante
       const origin = `${listRestObjects[0].lat},${listRestObjects[0].lng}`;
+      
+      // Destino final: Casa del cliente
       const destination = `${userLocation.lat},${userLocation.lng}`;
       
-      // Los locales intermedios van como "waypoints"
+      // Paradas intermedias: Todos los demás restaurantes ordenados
       const waypoints = listRestObjects
         .slice(1)
         .map(r => `${r.lat},${r.lng}`)
         .join('|');
 
-      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
-      msg += `• *Ruta Multi-recogida:* ${routeUrl}\n`;
+      // Se usa encodeURIComponent para asegurar que el símbolo | no rompa la URL en WhatsApp
+      const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`;
+      msg += `• *Ruta Multi-recogida (${listRestObjects.length} locales):* ${routeUrl}\n`;
     }
   }
 
