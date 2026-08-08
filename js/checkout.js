@@ -1,5 +1,9 @@
 /* ==========================================================
-   PROCESO DE CHECKOUT Y CONFIRMACIÓN DE PEDIDO (VÍA WHATSAPP)
+   PROCESO DE CHECKOUT Y CONFIRMACIÓN DE PEDIDO
+   El pedido se guarda en Firestore (colección "pedidos", el mismo
+   backend que usa /admin) para que aparezca al instante en el
+   panel del negocio y quede disponible para los drivers. Además
+   se abre WhatsApp como aviso rápido, igual que antes.
    ========================================================== */
 import { state } from './state.js';
 import { restaurants } from './data.js';
@@ -44,13 +48,13 @@ export function updateShippingPreview() {
   if (list.length === 1) {
     el.textContent = `Costo de envío: S/ ${totalShipping.toFixed(2)}`;
   } else {
-    const textDetails = list.map(x => `${x.restaurant.name}: S/ ${(x.cost || 0).toFixed(2)}`).join(' + ');
+    const textDetails = list.map(x => `${x.restaurant ? x.restaurant.name : 'Local'}: S/ ${(x.cost || 0).toFixed(2)}`).join(' + ');
     el.textContent = `Envíos (${list.length} locales): ${textDetails} = S/ ${totalShipping.toFixed(2)}`;
   }
   el.classList.add('show');
 }
 
-export function confirmOrder() {
+export async function confirmOrder() {
   const addr = document.getElementById('addrInput').value.trim();
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
@@ -63,45 +67,109 @@ export function confirmOrder() {
 
   if (!nameOk || !phoneOk) return;
 
-  // Validación amigable de ubicación/GPS
   if (!state.userLocation) {
-    if (!addr || addr.length < 5) {
-      const addrErr = document.getElementById('addrErr');
-      addrErr.style.display = 'block';
-      addrErr.textContent = '⚠️ Por favor, presiona "Obtener Ubicación" arriba o escribe tu dirección exacta con referencias.';
-      showToast('📍 Necesitamos tu ubicación GPS para calcular el envío');
-      document.getElementById('addrInput').focus();
-      return;
-    }
+    const addrErr = document.getElementById('addrErr');
+    addrErr.style.display = 'block';
+    addrErr.textContent = '⚠️ Necesitamos tu ubicación para calcular el envío. Usa el mapa o el botón "Usar mi ubicación actual".';
+    showToast('📍 Necesitamos tu ubicación GPS para calcular el envío');
+    return;
   }
-
   document.getElementById('addrErr').style.display = 'none';
 
   const sub = cartSubtotal();
-  const { totalShipping } = getShippingBreakdown();
+  const { list, totalShipping } = getShippingBreakdown();
   const total = sub + totalShipping;
 
-  const msg = buildWhatsappMessage({ name, phone, addr, sub, totalShipping, total });
+  const btn = document.getElementById('checkoutConfirmBtn');
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = 'Enviando...';
 
+  let orderId = null;
+  try {
+    orderId = await guardarPedidoEnFirestore({ name, phone, addr, sub, totalShipping, total, list });
+  } catch (err) {
+    console.error('Error al guardar el pedido:', err);
+    showToast('⚠️ No se pudo registrar el pedido, intenta de nuevo');
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    return;
+  }
+
+  const msg = buildWhatsappMessage({ name, phone, addr, sub, totalShipping, total, orderId });
   const waUrl = `https://api.whatsapp.com/send?phone=${MY_WHATSAPP_PHONE}&text=${encodeURIComponent(msg)}`;
   window.open(waUrl, '_blank');
 
+  btn.disabled = false;
+  btn.textContent = originalLabel;
   closeCheckout();
 
   const uniqueRestIds = [...new Set(state.cart.map(item => item.restaurantId))];
   document.getElementById('ticket').innerHTML = `
+    <div><b>N.° de pedido:</b> ${orderId ? orderId.slice(0, 8) : '—'}</div>
     <div><b>Locales pedidos:</b> ${uniqueRestIds.length}</div>
     <div><b>Cliente:</b> ${name}</div>
     <div><b>Total a pagar:</b> S/ ${total.toFixed(2)}</div>
-    <p style="margin-top:10px; color:#1b6329; font-weight:bold;">¡Se ha abierto WhatsApp para enviar tu pedido!</p>`;
+    <p style="margin-top:10px; color:var(--leaf-dark); font-weight:bold;">¡Pedido registrado! Se ha abierto WhatsApp para confirmar la entrega.</p>`;
   document.getElementById('confirmModal').classList.add('open');
 }
 
-function buildWhatsappMessage({ name, phone, addr, sub, totalShipping, total }) {
-  const uniqueRestIds = [...new Set(state.cart.map(item => item.restaurantId))];
-  const listRestObjects = uniqueRestIds.map(id => restaurants.find(r => r.id === id));
+// Guarda el pedido en la misma colección/estructura que usa el panel admin
+// (js/pedidos.js -> guardarPedido), para que aparezca en tiempo real ahí.
+async function guardarPedidoEnFirestore({ name, phone, addr, sub, totalShipping, list }) {
+  await motomotoAuthReady;
 
-  let msg = `*¡NUEVO PEDIDO EN SABORPUCALLPA!* 🛵💨\n\n`;
+  const items = state.cart.map(c => ({
+    localId: c.restaurantId,
+    localNombre: restaurants.find(r => r.id === c.restaurantId)?.name || '',
+    menuId: c.menuItem.id,
+    nombre: c.menuItem.name,
+    imagen: c.menuItem.img || null,
+    cantidad: c.qty,
+    precioUnitario: c.unitPrice,
+    opciones: c.opciones || [],
+    subtotalItem: Math.round(c.unitPrice * c.qty * 100) / 100
+  }));
+
+  const envioDetalle = list.map(x => ({
+    localId: x.restaurant?.id,
+    nombre: x.restaurant?.name || '',
+    km: x.km != null ? Math.round(x.km * 100) / 100 : null,
+    costo: x.cost || 0
+  }));
+
+  const docRef = await db.collection(COL.PEDIDOS).add({
+    cliente: {
+      nombre: name,
+      telefono: phone,
+      direccion: addr || '',
+      lat: state.userLocation.lat,
+      lng: state.userLocation.lng
+    },
+    items,
+    localesIds: [...new Set(items.map(it => it.localId))],
+    localesNombres: [...new Set(items.map(it => it.localNombre))],
+    subtotal: Math.round(sub * 100) / 100,
+    envio: Math.round(totalShipping * 100) / 100,
+    envioDetalle,
+    total: Math.round((sub + totalShipping) * 100) / 100,
+    estado: 'pendiente',
+    driverId: null,
+    driverNombre: null,
+    seguimiento: { llegadaLocal: null, recogioProducto: null, llegadaUbicacion: null, entregado: null },
+    origen: 'web',
+    creadoEn: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  return docRef.id;
+}
+
+function buildWhatsappMessage({ name, phone, addr, sub, totalShipping, total, orderId }) {
+  const uniqueRestIds = [...new Set(state.cart.map(item => item.restaurantId))];
+  const listRestObjects = uniqueRestIds.map(id => restaurants.find(r => r.id === id)).filter(Boolean);
+
+  let msg = `*¡NUEVO PEDIDO EN MOTO MOTO!* 🛵💨\n\n`;
+  if (orderId) msg += `*N.° de pedido:* ${orderId.slice(0, 8)}\n\n`;
 
   msg += `👤 *DATOS DEL CLIENTE*\n`;
   msg += `• *Nombre:* ${name}\n`;
@@ -110,25 +178,25 @@ function buildWhatsappMessage({ name, phone, addr, sub, totalShipping, total }) 
 
   if (state.userLocation) {
     msg += `• *Ubicación Cliente (GPS):* https://maps.google.com/?q=${state.userLocation.lat},${state.userLocation.lng}\n`;
-  } else {
-    msg += `• *Ubicación GPS:* _No compartida (Ver dirección escrita arriba)_\n`;
   }
 
   msg += `\n🛒 *DETALLE DEL PEDIDO Y LOCALES*\n`;
 
   uniqueRestIds.forEach((restId, idx) => {
     const r = restaurants.find(x => x.id === restId);
+    if (!r) return;
     const shipCost = shippingFor(restId) || 0;
 
     msg += `\n📍 *RECOGIDA ${idx + 1}: ${r.name}*\n`;
-    msg += `  • GPS Local: https://maps.google.com/?q=${r.lat},${r.lng}\n`;
+    if (r.lat != null && r.lng != null) msg += `  • GPS Local: https://maps.google.com/?q=${r.lat},${r.lng}\n`;
     msg += `  • Teléfono: +${r.phone || 'N/A'}\n`;
     msg += `  • Envío local: S/ ${shipCost.toFixed(2)}\n`;
     msg += `  • Platos:\n`;
 
     const items = state.cart.filter(c => c.restaurantId === restId);
     items.forEach(c => {
-      msg += `    - ${c.qty}x ${c.menuItem.name} (S/ ${(c.menuItem.price * c.qty).toFixed(2)})\n`;
+      const opts = (c.opciones || []).map(o => `${o.grupo}: ${o.seleccion.join(', ')}`).join('; ');
+      msg += `    - ${c.qty}x ${c.menuItem.name}${opts ? ` (${opts})` : ''} (S/ ${(c.unitPrice * c.qty).toFixed(2)})\n`;
     });
   });
 

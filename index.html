@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>SaborPucallpa — Delivery</title>
+  <meta name="theme-color" content="#800103">
+  <title>Moto Moto — Delivery</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <script>
+    // Se ejecuta antes de pintar la página para evitar el "flash" de tema
+    // incorrecto: usa la preferencia guardada, o si no existe, la del sistema.
+    (function () {
+      const saved = localStorage.getItem('motomoto-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <!-- Tipografía: Mukta, como en la referencia de diseño -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Estilos propios, separados por componente -->
   <link rel="stylesheet" href="css/variables.css">
@@ -19,22 +35,36 @@
   <!-- Leaflet (mapa interactivo) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Firebase (mismo backend que usa el panel admin en /admin): locales,
+       menús y pedidos en tiempo real. Se carga como script clásico para
+       exponer `db`/`auth`/`COL` globales, igual que en /admin. -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
 
 <header class="site">
-  <div class="brand">
-    <div class="brand-badge">🍽️</div>
-    <div>
-      <div class="brand-name">SaborPucallpa</div>
-      <div class="brand-sub">Delivery contra entrega</div>
+  <div class="site-inner">
+    <div class="brand">
+      <img src="assets/logo.png" alt="Moto Moto" class="brand-badge">
+      <div>
+        <div class="brand-name">Moto Moto</div>
+        <div class="brand-sub">Delivery contra entrega</div>
+      </div>
     </div>
-  </div>
-  <div class="header-right">
-    <button class="pill cart" id="cartOpenBtn">
-      🛒 <span>Mi pedido</span>
-      <span class="cart-count" id="cartCount">0</span>
-    </button>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema claro/oscuro">
+        <span class="theme-icon theme-icon-sun">☀️</span>
+        <span class="theme-icon theme-icon-moon">🌙</span>
+      </button>
+      <button class="pill cart" id="cartOpenBtn">
+        🛒 <span>Mi pedido</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -51,6 +81,7 @@
     <div class="search-box">
       🔍 <input id="searchInput" placeholder="Buscar restaurante o plato…">
     </div>
+    <button class="hero-cta" id="heroCtaBtn">Ver restaurantes</button>
   </div>
 </div>
 
@@ -64,7 +95,7 @@
 <div class="layout-services-promos">
 
   <section class="services-section">
-    <h3 class="section-title">MOTOMOTO SERVICIOS</h3>
+    <h3 class="section-title">MOTO MOTO SERVICIOS</h3>
     <div class="services-banner">
       <div class="services-header">
         <h4>¿Necesitas llevar algo? <span class="badge-new">¡NUEVO!</span></h4>
@@ -88,7 +119,7 @@
   </section>
 
   <section class="promos-section">
-    <h3 class="section-title">PROMOCIONES SOLO POR MOTOMOTO</h3>
+    <h3 class="section-title">PROMOCIONES SOLO POR MOTO MOTO</h3>
     <div class="promos-wrapper">
       <button class="nav-arrow prev" id="promosPrevBtn">‹</button>
       <div class="promos-carousel" id="promosCarousel">
@@ -133,7 +164,7 @@
 <div class="modal-back" id="checkoutModal">
   <div class="modal">
     <h3>Datos de entrega</h3>
-    <p style="font-size:12.5px;color:#8a7256;margin:4px 0 16px;">El envío se calcula por distancia real desde el restaurante.</p>
+    <p style="font-size:12.5px;color:var(--text-muted);margin:4px 0 16px;">El envío se calcula por distancia real desde el restaurante.</p>
 
     <div class="field">
       <label>Ubicación de entrega</label>
@@ -174,11 +205,24 @@
     <div class="confirm-wrap">
       <div class="confirm-icon">✓</div>
       <h3>¡Pedido enviado!</h3>
-      <p style="font-size:13px;color:#8a7256;">Te escribiremos por WhatsApp para confirmar la entrega.</p>
+      <p style="font-size:13px;color:var(--text-muted);">Te escribiremos por WhatsApp para confirmar la entrega.</p>
       <div class="ticket" id="ticket"></div>
       <div class="modal-actions" style="margin-top:16px;">
         <button class="btn-confirm" id="confirmFinishBtn">Listo</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Opciones del plato (entradas, sabores, etc. — solo aparece si el
+     plato tiene grupos de opciones configurados en el panel admin) -->
+<div class="modal-back" id="optionsModal">
+  <div class="modal">
+    <h3 id="optItemNombre">Elige tus opciones</h3>
+    <div id="optItemBody"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="optCancelBtn">Cancelar</button>
+      <button class="btn-confirm" id="optConfirmBtn">Agregar al pedido</button>
     </div>
   </div>
 </div>
@@ -206,8 +250,9 @@
 
 <div class="toast" id="toast"></div>
 
-<footer style="text-align:center;padding:24px;font-size:12px;color:#a08a6c;">
-  SaborPucallpa · Prototipo de delivery local
+<footer class="site-footer">
+  <img src="assets/logo.png" alt="Moto Moto" class="footer-logo">
+  <span>Moto Moto · Delivery en Pucallpa, contra entrega</span>
 </footer>
 
 <!-- Módulo de entrada. type="module" habilita import/export nativos del

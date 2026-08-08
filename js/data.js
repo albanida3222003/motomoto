@@ -1,96 +1,198 @@
 /* ==========================================================
-   DATOS DE LA APP (categorías, promociones, restaurantes)
-   En un backend real esto vendría de una API/base de datos.
-   Por ahora es la "base de datos" simulada del prototipo.
+   DATOS DE LA APP — AHORA VIENEN DE FIRESTORE (mismo backend que
+   usa el panel de administración en /admin).
+   Antes este archivo tenía arrays fijos (restaurantes de prueba).
+   Ahora son arrays que se actualizan en vivo: se escuchan los
+   `locales` (y el menú de cada uno, subcolección `menus`) con
+   onSnapshot y, cada vez que cambia algo en Firestore, estos
+   mismos arrays se actualizan "in place" y se notifica a quien
+   se haya suscrito con `initData(callback)`.
+
+   Como son exports de un array (misma referencia, se muta con
+   splice/push), el resto de módulos que hacen
+   `import { restaurants } from './data.js'` siempre ven los
+   datos más recientes sin tener que volver a importar nada.
    ========================================================== */
 
-export const categories = [
-  { id: 'all', name: 'Todos', icon: '🍽️' },
-  { id: 'amazonica', name: 'Amazónica', icon: '🍃' },
-  { id: 'marino', name: 'Marinos', icon: '🐙' },
-  { id: 'broster', name: 'Broster', icon: '🍗' },
-  { id: 'polleria', name: 'Pollería', icon: '🐔' },
-  { id: 'bebidas', name: 'Bebidas', icon: '🧃' }
-];
+export const categories = [{ id: 'all', name: 'Todos', icon: '🍽️' }];
+export const promotions = [];
+export const restaurants = [];
 
-// Banners de promociones (imágenes publicitarias)
-export const promotions = [
-  {
-    id: 'p1',
-    img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600',
-    restaurantId: 'r1'
-  },
-  {
-    id: 'p2',
-    img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
-    restaurantId: 'r2'
-  }
-];
+// true en cuanto llega la primera respuesta de Firestore (aunque esté
+// vacía), para poder distinguir "cargando" de "no hay restaurantes".
+export let dataLoaded = false;
 
-export const restaurants = [
-  {
-    id: 'r1',
-    name: 'El Aguajal',
-    category: 'amazonica',
-    desc: 'Cocina amazónica tradicional',
-    phone: '51987654321',
-    rating: 4.8,
-    time: '25-35 min',
-    img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600',
-    lat: -8.3791,
-    lng: -74.5539,
-    menu: [
-      { id: 'm1', name: 'Juane de gallina', desc: 'Arroz con gallina envuelto en hoja de bijao', price: 18, img: 'https://images.unsplash.com/photo-1626804475297-41608ea09aeb?w=300' },
-      { id: 'm2', name: 'Tacacho con cecina', desc: 'Plátano asado con cecina ahumada', price: 22, img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300' },
-      { id: 'm3', name: 'Inchicapi', desc: 'Sopa espesa de gallina con maní', price: 15, img: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=300' }
-    ]
-  },
-  {
-    id: 'r2',
-    name: 'Chifa Amazónico',
-    category: 'amazonica',
-    desc: 'Fusión oriental y selvática',
-    phone: '51987654321',
-    rating: 4.6,
-    time: '30-40 min',
-    img: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
-    lat: -8.3850,
-    lng: -74.5480,
-    menu: [
-      { id: 'm4', name: 'Arroz chaufa de paiche', desc: 'Chaufa con pescado amazónico', price: 20, img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=300' },
-      { id: 'm5', name: 'Wantán frito', desc: '8 unidades con salsa agridulce', price: 14, img: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=300' }
-    ]
-  },
-  {
-    id: 'r3',
-    name: 'Parrilla del Ucayali',
-    category: 'broster',
-    desc: 'Carnes y anticuchos a la brasa',
-    phone: '51987654321',
-    rating: 4.7,
-    time: '35-45 min',
-    img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600',
-    lat: -8.3720,
-    lng: -74.5600,
-    menu: [
-      { id: 'm6', name: 'Anticucho de corazón', desc: '3 palitos con papa y choclo', price: 16, img: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=300' },
-      { id: 'm7', name: 'Parrilla mixta', desc: 'Res, pollo y chorizo para 2', price: 45, img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=300' }
-    ]
-  },
-  {
-    id: 'r4',
-    name: 'Jugos y Frutas del Río',
-    category: 'bebidas',
-    desc: 'Jugos naturales de la selva',
-    phone: '51987654321',
-    rating: 4.9,
-    time: '15-25 min',
-    img: 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=600',
-    lat: -8.3810,
-    lng: -74.5510,
-    menu: [
-      { id: 'm8', name: 'Jugo de camu camu', desc: 'Vaso grande 500ml', price: 8, img: 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300' },
-      { id: 'm9', name: 'Refresco de aguaje', desc: 'Vaso grande 500ml', price: 7, img: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=300' }
-    ]
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600';
+
+const CATEGORY_ICONS = {
+  amazonica: '🍃',
+  marino: '🐙',
+  marinos: '🐙',
+  broster: '🍗',
+  polleria: '🐔',
+  pollo: '🐔',
+  bebidas: '🧃',
+  carnes: '🥩',
+  parrilla: '🔥',
+  postres: '🍰',
+  pizza: '🍕',
+  china: '🥡',
+  chifa: '🥡',
+  cafe: '☕',
+  desayunos: '🥞'
+};
+
+function normalize(str) {
+  return (str || '')
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function slugify(str) {
+  return normalize(str).replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'otros';
+}
+
+function iconFor(categoryLabel) {
+  return CATEGORY_ICONS[normalize(categoryLabel)] || '🍴';
+}
+
+/** Misma lógica que /admin/js/utils.js -> estaAtendiendo(local) */
+const DIAS_SEMANA = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+
+function estaAtendiendo(raw) {
+  if (!raw) return true;
+  if (raw.forzarEstado === 'cerrado') return false;
+  if (raw.forzarEstado === 'abierto') return true;
+
+  const horario = raw.horario || {};
+  const ahora = new Date();
+  const diaKey = DIAS_SEMANA[(ahora.getDay() + 6) % 7];
+  const dia = horario[diaKey];
+  if (!dia || dia.cerrado) return false;
+  if (!dia.abre || !dia.cierra) return false;
+
+  const [hA, mA] = dia.abre.split(':').map(Number);
+  const [hC, mC] = dia.cierra.split(':').map(Number);
+  const minutosAhora = ahora.getHours() * 60 + ahora.getMinutes();
+  const minA = hA * 60 + mA;
+  const minC = hC * 60 + mC;
+
+  if (minC > minA) return minutosAhora >= minA && minutosAhora <= minC;
+  return minutosAhora >= minA || minutosAhora <= minC; // horario que cruza medianoche
+}
+
+const localesRaw = new Map();  // id -> restaurant object (con .menu ya resuelto)
+const menuUnsubs = new Map();  // id -> función para cancelar el listener del menú
+let onUpdateCallback = null;
+
+function mapLocalDoc(doc) {
+  const d = doc.data();
+  const categoryLabel = (d.categoria || '').trim() || 'Otros';
+  const prev = localesRaw.get(doc.id);
+  return {
+    id: doc.id,
+    name: d.nombre || 'Sin nombre',
+    category: slugify(categoryLabel),
+    categoryLabel,
+    desc: categoryLabel,
+    phone: (d.telefono || '').toString().replace(/\D/g, ''),
+    img: d.imagen || FALLBACK_IMG,
+    lat: d.ubicacion?.lat,
+    lng: d.ubicacion?.lng,
+    direccion: d.ubicacion?.direccion || '',
+    envioBase: Number(d.envioBase) || 0,
+    envioPorKm: Number(d.envioPorKm) || 0,
+    atendiendo: estaAtendiendo(d),
+    menu: prev ? prev.menu : [],      // se conserva mientras llega el listener del menú
+    _raw: { horario: d.horario, forzarEstado: d.forzarEstado }
+  };
+}
+
+function mapMenuDoc(doc) {
+  const d = doc.data();
+  return {
+    id: doc.id,
+    name: d.nombre || 'Sin nombre',
+    desc: d.descripcion || '',
+    price: Number(d.precio) || 0,
+    img: d.imagen || FALLBACK_IMG,
+    disponible: d.disponible !== false,
+    gruposOpciones: d.gruposOpciones || []
+  };
+}
+
+function rebuildDerivedLists() {
+  const cats = new Map();
+  restaurants.forEach(r => {
+    if (!cats.has(r.category)) cats.set(r.category, { id: r.category, name: r.categoryLabel, icon: iconFor(r.categoryLabel) });
+  });
+  categories.splice(1, categories.length - 1, ...cats.values());
+
+  const promoSource = restaurants.filter(r => r.img);
+  promotions.splice(0, promotions.length, ...promoSource.slice(0, 4).map((r, i) => ({ id: 'p' + i, img: r.img, restaurantId: r.id })));
+}
+
+function rebuildAndNotify() {
+  const list = [...localesRaw.values()].sort((a, b) => a.name.localeCompare(b.name, 'es'));
+  restaurants.splice(0, restaurants.length, ...list);
+  rebuildDerivedLists();
+  dataLoaded = true;
+  if (onUpdateCallback) onUpdateCallback();
+}
+
+function handleLocalesSnapshot(snap) {
+  const currentIds = new Set(snap.docs.map(d => d.id));
+
+  // Locales eliminados: cancelar su listener de menú y quitarlos del caché.
+  for (const id of [...localesRaw.keys()]) {
+    if (!currentIds.has(id)) {
+      if (menuUnsubs.has(id)) { menuUnsubs.get(id)(); menuUnsubs.delete(id); }
+      localesRaw.delete(id);
+    }
   }
-];
+
+  snap.docs.forEach(doc => {
+    localesRaw.set(doc.id, mapLocalDoc(doc));
+
+    if (!menuUnsubs.has(doc.id)) {
+      const unsub = db.collection(COL.LOCALES).doc(doc.id).collection(COL.MENUS).orderBy('nombre')
+        .onSnapshot(msnap => {
+          const menu = msnap.docs.map(mapMenuDoc).filter(m => m.disponible);
+          const r = localesRaw.get(doc.id);
+          if (r) { r.menu = menu; rebuildAndNotify(); }
+        }, err => console.error('Error cargando menú de', doc.id, err));
+      menuUnsubs.set(doc.id, unsub);
+    }
+  });
+
+  rebuildAndNotify();
+}
+
+/**
+ * Arranca los listeners en tiempo real de Firestore. `onUpdate` se llama
+ * cada vez que cambian los locales o el menú de cualquiera de ellos.
+ */
+export function initData(onUpdate) {
+  onUpdateCallback = onUpdate;
+  motomotoAuthReady.then(() => {
+    db.collection(COL.LOCALES).orderBy('nombre').onSnapshot(handleLocalesSnapshot, err => {
+      console.error('Error cargando locales:', err);
+      dataLoaded = true;
+      if (onUpdateCallback) onUpdateCallback();
+    });
+  });
+
+  // El estado "atendiendo ahora" depende de la hora actual, así que se
+  // refresca solo cada minuto (igual que en el panel admin).
+  setInterval(() => {
+    let changed = false;
+    restaurants.forEach(r => {
+      const nowOpen = estaAtendiendo(r._raw);
+      if (nowOpen !== r.atendiendo) { r.atendiendo = nowOpen; changed = true; }
+    });
+    if (changed && onUpdateCallback) onUpdateCallback();
+  }, 60000);
+}

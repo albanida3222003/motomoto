@@ -25,12 +25,12 @@ function setBanner(text, type) {
   actions.style.cssText = 'margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;';
 
   const retryBtn = document.createElement('button');
-  retryBtn.style.cssText = 'background:#1b6329; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;';
+  retryBtn.style.cssText = 'background:var(--leaf-dark); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;';
   retryBtn.textContent = type === 'err' ? 'Reintentar GPS' : 'Actualizar GPS';
   retryBtn.addEventListener('click', () => requestLocation(true));
 
   const mapBtn = document.createElement('button');
-  mapBtn.style.cssText = 'background:#ff6600; color:white; border:none; padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;';
+  mapBtn.style.cssText = 'background:var(--clay); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:12px; cursor:pointer;';
   mapBtn.textContent = 'Elegir en mapa 🗺️';
   mapBtn.addEventListener('click', () => openMapPicker());
 

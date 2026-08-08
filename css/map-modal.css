@@ -10,13 +10,13 @@
 .map-header h3 {
   margin: 0 0 5px 0;
   font-size: 18px;
-  color: #2c2c2c;
+  color: var(--surface-ink);
 }
 
 .map-header p {
   margin: 0 0 12px 0;
   font-size: 13px;
-  color: #666;
+  color: var(--surface-muted);
 }
 
 .map-footer {
@@ -29,30 +29,32 @@
 .coords-info {
   font-size: 13px;
   font-weight: bold;
-  color: #1b6329;
+  color: var(--clay-dark);
   text-align: center;
-  background: #e8f5e9;
+  background: var(--brand-cream);
+  border: 1px solid var(--line);
   padding: 8px;
   border-radius: 8px;
 }
 
 .btn-confirm-map {
-  background-color: #ff6600;
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-maroon));
   color: #fff;
   border: none;
   padding: 12px;
   font-size: 15px;
   font-weight: bold;
-  border-radius: 10px;
+  border-radius: 999px;
   cursor: pointer;
+  box-shadow: 0 6px 16px rgba(215,38,61,.35);
 }
 
 .btn-cancel-map {
   background-color: transparent;
-  color: #666;
-  border: 1px solid #ccc;
+  color: var(--surface-muted);
+  border: 1px solid var(--line);
   padding: 8px;
   font-size: 13px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
 }

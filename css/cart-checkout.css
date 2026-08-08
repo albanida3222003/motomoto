@@ -1,13 +1,16 @@
 /* ==========================================================
    TOAST, CARRITO (DRAWER) Y MODALES DE CHECKOUT
+   Todo el flujo de pedido vive sobre tarjetas crema constantes
+   (igual en modo claro y oscuro) con botones rojo/naranja tipo
+   "Order now" / "Order" de la referencia.
    ========================================================== */
 .toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(20px);
-  background: var(--ink);
-  color: white;
+  background: var(--surface-ink);
+  color: #fff;
   padding: 12px 20px;
   border-radius: 999px;
   font-size: 13px;
@@ -16,7 +19,7 @@
   opacity: 0;
   pointer-events: none;
   transition: .25s;
-  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
 }
 
 .toast.show {
@@ -28,7 +31,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(20,10,4,.45);
+  background: var(--overlay);
   opacity: 0;
   pointer-events: none;
   transition: .2s;
@@ -65,11 +68,13 @@
   justify-content: space-between;
   align-items: center;
   background: var(--white);
+  color: var(--surface-ink);
 }
 
 .close-x {
   border: none;
   background: none;
+  color: var(--surface-ink);
   font-size: 20px;
   cursor: pointer;
 }
@@ -98,6 +103,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
+  color: var(--surface-ink);
 }
 
 .cart-row img {
@@ -119,7 +125,7 @@
 
 .cart-row-unit {
   font-size: 11px;
-  color: var(--text-muted-2);
+  color: var(--surface-muted);
 }
 
 .cart-row-actions {
@@ -133,7 +139,8 @@
   height: 24px;
   border-radius: 6px;
   border: 1px solid var(--line);
-  background: var(--cream);
+  background: var(--brand-cream);
+  color: var(--surface-ink);
   cursor: pointer;
 }
 
@@ -149,6 +156,7 @@
   border-top: 1px solid var(--line);
   padding: 16px 20px;
   background: var(--white);
+  color: var(--surface-ink);
 }
 
 .total-row {
@@ -166,25 +174,28 @@
 
 .hint-row {
   font-size: 11.5px;
-  color: var(--text-muted-2);
+  color: var(--surface-muted);
   margin-top: 2px;
 }
 
 .checkout-btn {
   width: 100%;
   margin-top: 12px;
-  background: var(--clay);
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-maroon));
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 999px;
   padding: 14px;
   font-size: 14.5px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 6px 16px rgba(215,38,61,.35);
 }
 
 .checkout-btn:disabled {
-  background: #d7c6ac;
+  background: var(--disabled);
+  color: var(--surface-muted);
+  box-shadow: none;
   cursor: not-allowed;
 }
 
@@ -192,7 +203,7 @@
 .modal-back {
   position: fixed;
   inset: 0;
-  background: rgba(20,10,4,.5);
+  background: var(--overlay);
   z-index: 60;
   display: none;
   align-items: center;
@@ -206,6 +217,7 @@
 
 .modal {
   background: var(--white);
+  color: var(--surface-ink);
   border-radius: 18px;
   max-width: 420px;
   width: 100%;
@@ -223,6 +235,7 @@
   font-size: 12.5px;
   font-weight: 700;
   margin-bottom: 6px;
+  color: var(--surface-ink);
 }
 
 .field input, .field textarea {
@@ -231,7 +244,8 @@
   border-radius: 10px;
   border: 1px solid var(--line);
   font-size: 14px;
-  background: var(--cream);
+  background: var(--brand-cream);
+  color: var(--surface-ink);
   outline: none;
   font-family: inherit;
 }
@@ -242,7 +256,7 @@
   gap: 6px;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--leaf-dark);
+  color: var(--clay-dark);
   background: none;
   border: none;
   cursor: pointer;
@@ -253,11 +267,11 @@
 .shipping-preview {
   margin-top: 8px;
   font-size: 12.5px;
-  background: var(--cream-2);
+  background: #FBDCC4;
   border-radius: 10px;
   padding: 9px 11px;
   display: none;
-  color: var(--leaf-dark);
+  color: var(--clay-dark);
   font-weight: 700;
 }
 
@@ -266,10 +280,12 @@
 }
 
 .order-summary {
-  background: var(--cream);
+  background: var(--brand-cream);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px 14px;
   margin: 6px 0;
+  color: var(--surface-ink);
 }
 
 .modal-actions {
@@ -280,7 +296,7 @@
 
 .modal-actions button {
   flex: 1;
-  border-radius: 11px;
+  border-radius: 999px;
   padding: 13px;
   font-weight: 700;
   font-size: 14px;
@@ -288,15 +304,16 @@
 }
 
 .btn-cancel {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--clay);
+  color: var(--clay);
 }
 
 .btn-confirm {
-  background: var(--leaf);
+  background: linear-gradient(135deg, var(--brand-red), var(--brand-maroon));
   border: none;
   color: white;
+  box-shadow: 0 6px 16px rgba(215,38,61,.35);
 }
 
 .err {
@@ -310,13 +327,14 @@
 .confirm-wrap {
   text-align: center;
   padding: 10px 4px;
+  color: var(--surface-ink);
 }
 
 .confirm-icon {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--leaf);
+  background: linear-gradient(135deg, var(--brand-orange), var(--brand-red));
   color: white;
   font-size: 28px;
   display: flex;
@@ -327,11 +345,60 @@
 
 .ticket {
   text-align: left;
-  background: var(--cream);
+  background: var(--brand-cream);
   border: 1px dashed var(--line);
   border-radius: 12px;
   padding: 14px;
   margin-top: 16px;
   font-size: 13px;
   line-height: 1.6;
+  color: var(--surface-ink);
+}
+
+/* Opciones elegidas de un ítem del carrito (ej. "Elige tu entrada: Yuca") */
+.cart-row-opts {
+  font-size: 10.5px;
+  color: var(--text-muted, var(--surface-muted));
+  margin: 2px 0;
+}
+
+/* Modal de opciones del plato (grupos obligatorios/opcionales) */
+.opt-group-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 14px 0 2px;
+  color: var(--surface-ink);
+}
+
+.opt-group-title:first-child {
+  margin-top: 4px;
+}
+
+.opt-required {
+  color: var(--error);
+}
+
+.opt-group-hint {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.opt-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--surface-ink);
+  cursor: pointer;
+}
+
+.opt-item-row input {
+  width: auto;
+}
+
+.opt-extra {
+  color: var(--clay-dark);
+  font-weight: 600;
 }

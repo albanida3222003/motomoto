@@ -1,5 +1,9 @@
 /* ==========================================================
    CÁLCULO DE DISTANCIAS Y COSTO DE ENVÍO
+   Vuelve al estilo original de motomoto: una sola tarifa de envío
+   (SHIPPING en config.js) para todos los locales, redondeada al
+   0.50 más cercano y con un mínimo garantizado — en vez de la
+   tarifa por-local (envioBase/envioPorKm) del panel admin.
    ========================================================== */
 import { SHIPPING, DISTANCE_MODE, GOOGLE_MAPS_API_KEY } from './config.js';
 import { restaurants } from './data.js';
@@ -40,6 +44,7 @@ export async function distanceKm(from, to) {
 export async function recomputeAllDistances() {
   if (!state.userLocation) return;
   for (const r of restaurants) {
+    if (r.lat == null || r.lng == null) continue;
     state.distanceCache[r.id] = await distanceKm(state.userLocation, { lat: r.lat, lng: r.lng });
   }
 }

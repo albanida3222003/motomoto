@@ -11,7 +11,7 @@
   font-family: inherit;
   font-size: 16px;
   font-weight: 800;
-  color: #1e2d1d;
+  color: var(--ink);
   margin-bottom: 10px;
   letter-spacing: normal;
   text-transform: none;
@@ -23,7 +23,7 @@
 }
 
 .services-banner {
-  background: #258f38;
+  background: linear-gradient(135deg, var(--clay), var(--clay-dark));
   border-radius: 16px;
   padding: 16px;
   color: white;
@@ -67,8 +67,8 @@
 }
 
 .service-card {
-  background: white;
-  color: #1b6329;
+  background: var(--brand-cream);
+  color: var(--clay-dark);
   border-radius: 12px;
   padding: 8px 4px;
   display: flex;
@@ -144,12 +144,12 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: white;
+  background: var(--white);
   border: none;
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   font-size: 20px;
   font-weight: bold;
-  color: #333;
+  color: var(--surface-ink);
   cursor: pointer;
   z-index: 10;
   display: flex;
@@ -159,7 +159,7 @@
 }
 
 .nav-arrow:hover {
-  background: #f5f5f5;
+  background: var(--brand-cream);
   transform: translateY(-50%) scale(1.1);
 }
 
