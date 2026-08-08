@@ -1,7 +1,7 @@
 // ============================================================
 // DRIVERS (lado administrador): alta, edición, estado
-// El flujo de trabajo del driver (elegir pedido y marcar tiempos)
-// vive en driver.html / js/driver-app.js
+// El panel donde el propio driver entra con su PIN y ve sus pedidos
+// es un paso aparte, todavía no incluido en este proyecto.
 // ============================================================
 
 let DRIVERS = [];

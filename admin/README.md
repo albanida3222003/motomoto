@@ -5,9 +5,9 @@ pedidos de una plataforma de delivery. HTML + CSS + JS puro (sin frameworks
 ni build step), conectado a **Supabase** (Auth + Postgres + Realtime), listo
 para publicar en GitHub Pages.
 
-> Este panel es el primer paso del proyecto combinado. Por ahora `driver.html`
-> (panel de drivers) sigue con el código viejo de Firebase — lo migramos en
-> el siguiente paso.
+> Este es el único frente que estamos tocando por ahora. El panel de drivers
+> y el sitio cliente se agregan en pasos posteriores, combinando esto con
+> el otro proyecto (`documentacion_pruebas`).
 
 ## 1. Crear el proyecto en Supabase
 
@@ -30,18 +30,30 @@ correo y contraseña con los que vas a entrar en `index.html`. Marca
 
 ## 3. Conectar el panel a tu proyecto
 
-Ve a **Project Settings → API** y copia:
-- **Project URL**
-- **anon public key**
+Supabase renombró sus API keys hace poco. En el menú lateral ve a
+**Project Settings → API Keys** (con el ícono de engranaje ⚙️, abajo a la
+izquierda) y ahí:
 
-Pégalos en [`js/supabase-config.js`](js/supabase-config.js):
+1. En la parte de arriba de la página copia la **Project URL**
+   (algo como `https://xxxxx.supabase.co`).
+2. Quédate en la pestaña **"Publishable and secret API keys"** (la que
+   sale seleccionada por defecto — **no** entres a "Legacy anon,
+   service_role API keys", esa es la vieja).
+3. En la tarjeta **"Publishable key"**, dale clic al ícono de copiar junto
+   a la key que empieza con `sb_publishable_...`.
+
+   > Es el reemplazo directo de la vieja "anon public key" — funciona
+   > igual (es segura para usar en el navegador) y es la que va en el
+   > panel.
+
+Pega ambos valores en [`js/supabase-config.js`](js/supabase-config.js):
 
 ```js
 const SUPABASE_URL = "https://tu-proyecto.supabase.co";
-const SUPABASE_ANON_KEY = "tu-anon-key";
+const SUPABASE_ANON_KEY = "sb_publishable_xxxxxxxxxxxx";
 ```
 
-> La `anon key` es pública a propósito (va en el navegador de cualquiera).
+> Esta key es pública a propósito (va en el navegador de cualquiera).
 > La seguridad real la dan las políticas RLS ya incluidas en `schema.sql`:
 > solo un usuario **autenticado** (tu admin) puede leer/escribir datos.
 
@@ -74,7 +86,6 @@ contraseña que creaste en el paso 2.
 ```
 index.html              Login del administrador (correo + contraseña)
 dashboard.html           Panel principal (Resumen, Locales, Menús, Pedidos, Drivers)
-driver.html               ⚠️ Aún no migrado (sigue con Firebase, pendiente)
 css/style.css            Estilos
 js/supabase-config.js    Config de Supabase (¡edítalo primero!)
 js/utils.js              Cálculo de distancia/envío, formato de moneda, toasts, etc.
@@ -82,7 +93,7 @@ js/app.js                Sesión (Supabase Auth) y navegación del admin
 js/locales.js             CRUD de locales + horario + estado de atención
 js/menus.js               CRUD de platos por local + grupos de opciones
 js/pedidos.js             Constructor de pedidos, cálculo de envío, seguimiento
-js/drivers.js             CRUD de drivers (lado admin)
+js/drivers.js             CRUD de drivers (lado admin — alta/edición/estado)
 ```
 
 ## 7. Modelo de datos (Postgres / Supabase)
@@ -114,18 +125,21 @@ driver_nombre, seguimiento (jsonb)`. El envío se calcula sumando, por cada
 local distinto presente en el pedido, `envio_base + envio_por_km × distancia`
 (fórmula de Haversine).
 
-**`drivers`**: `nombre, telefono, vehiculo, pin, estado`.
+**`drivers`**: `nombre, telefono, vehiculo, pin, estado`. Por ahora esta
+tabla solo se administra desde aquí (alta, edición, estado); el panel donde
+el propio driver entra con su PIN y ve sus pedidos es un paso aparte,
+todavía no incluido en este proyecto.
 
 ## 8. Nota de seguridad
 
-El PIN del driver se guarda en texto plano en la tabla `drivers` para
-mantener el flujo simple (teléfono + PIN de 4 dígitos) cuando migremos
-`driver.html`. Cualquier usuario autenticado puede leer esa tabla hoy. Si
-más adelante quieres subir el nivel de seguridad, lo ideal es mover la
+El PIN del driver se guardará en texto plano en la tabla `drivers` cuando
+construyamos su panel de acceso, para mantener el flujo simple (teléfono +
+PIN de 4 dígitos). Cualquier usuario autenticado puede leer esa tabla hoy.
+Si más adelante quieres subir el nivel de seguridad, lo ideal es mover la
 validación del PIN a una Edge Function de Supabase.
 
 ## Próximo paso
 
 Cuando confirmes que el panel admin funciona bien contra Supabase, seguimos
-con: 1) migrar `driver.html` a Supabase, y 2) conectar el sitio cliente
-(`motomoto`) a las mismas tablas, combinando ambos proyectos en un solo repo.
+con el panel de acceso para drivers y con conectar el sitio cliente a estas
+mismas tablas, combinando esto con `documentacion_pruebas`.
