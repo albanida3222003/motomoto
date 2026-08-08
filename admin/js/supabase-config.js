@@ -9,8 +9,8 @@
 // (esta key es pública a propósito, va en el navegador de cualquiera: la
 // seguridad real la dan las políticas RLS de supabase/schema.sql)
 // ============================================================
-const SUPABASE_URL = "https://ddiolwboxcrpwxhpqztz.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_FEW_4ByWAICRDudCtNFCeA_lllb1OeO";
+const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_TU_KEY_AQUI";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
