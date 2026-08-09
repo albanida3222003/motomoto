@@ -633,6 +633,94 @@
   .map-confirm-card .mc-city{font-size:.76rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:.03em;}
   .map-confirm-card .mc-address{font-weight:700; font-size:.96rem; margin:2px 0 0;}
 
+  /* ============ BUSCADOR ============ */
+  .search-trigger-mobile{display:none;}
+  .search-overlay{
+    position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.4);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:86px 16px 16px;
+  }
+  .search-overlay.open{display:flex;}
+  .search-panel{
+    width:min(760px, 100%); max-height:80vh;
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:22px;
+    box-shadow:0 30px 70px -20px var(--shadow);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .search-top{
+    display:flex; align-items:center; gap:10px; padding:16px 18px;
+    border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .search-back{
+    display:none; background:none; border:none; color:var(--text); cursor:pointer;
+    padding:6px; flex-shrink:0; border-radius:50%;
+  }
+  .search-input-wrap{
+    flex:1; min-width:0; display:flex; align-items:center; gap:9px;
+    background:var(--bg-dim); border:1.5px solid var(--border); border-radius:999px; padding:10px 16px;
+  }
+  .search-input-wrap:focus-within{border-color:var(--brand);}
+  .search-input-wrap svg{color:var(--text-soft); flex-shrink:0;}
+  .search-input-wrap input{
+    flex:1; min-width:0; border:none; outline:none; background:transparent; color:var(--text);
+    font-family:var(--font-body); font-size:.95rem;
+  }
+  .search-clear{background:none; border:none; color:var(--text-soft); cursor:pointer; font-size:1rem; padding:4px; flex-shrink:0;}
+  .search-body{padding:18px; overflow-y:auto;}
+  .search-empty{
+    text-align:center; color:var(--text-soft); font-size:.88rem; padding:36px 10px; line-height:1.5;
+  }
+  .search-section-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:22px 0 12px;}
+  .search-section-title{font-family:var(--font-display); font-size:1.05rem; margin:22px 0 12px;}
+  .search-body > .search-rest-list:first-child ~ .search-section-title,
+  .search-body > .search-section-title:first-child{margin-top:0;}
+  .search-section-head .search-section-title{margin:0;}
+  .search-filters{display:flex; gap:8px;}
+  .search-filters select{
+    appearance:none; background:var(--bg-dim); border:1px solid var(--border); color:var(--text);
+    font-family:var(--font-body); font-size:.78rem; font-weight:700; padding:8px 26px 8px 12px; border-radius:999px;
+    cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 10px center;
+  }
+  .search-rest-list{display:flex; flex-direction:column; gap:10px;}
+  .search-rest-item{
+    display:flex; gap:12px; align-items:center; text-align:left; width:100%;
+    background:var(--bg-dim); border:1px solid var(--border); border-radius:16px; padding:10px; cursor:pointer;
+    font-family:var(--font-body); transition:border-color .15s ease;
+  }
+  .search-rest-item:hover{border-color:var(--brand);}
+  .search-rest-item img{width:64px; height:64px; border-radius:12px; object-fit:cover; flex-shrink:0; background:var(--bg-elevated);}
+  .search-rest-info h4{font-size:.92rem; margin:0 0 2px; color:var(--text);}
+  .search-rest-info p{font-size:.76rem; color:var(--text-soft); margin:0 0 6px;}
+  .search-rest-meta{display:flex; gap:10px; font-size:.72rem; color:var(--text-soft); font-weight:700; flex-wrap:wrap;}
+  .search-prod-group{margin-bottom:18px;}
+  .search-prod-group-header{
+    display:flex; align-items:center; gap:9px; width:100%; background:none; border:none; cursor:pointer;
+    padding:4px 2px 10px; font-family:var(--font-body); color:var(--text); text-align:left;
+  }
+  .search-prod-group-header img{width:30px; height:30px; border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--bg-dim);}
+  .search-prod-group-header h4{font-size:.9rem; margin:0; flex:1; min-width:0;}
+  .search-prod-group-header span{font-size:.76rem; color:var(--text-soft); font-weight:700; flex-shrink:0;}
+  .search-prod-group-header svg{color:var(--text-soft); flex-shrink:0;}
+  .search-prod-row{
+    display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;
+  }
+  .search-prod-row::-webkit-scrollbar{height:0;}
+  .search-dish-card{
+    flex:0 0 150px; scroll-snap-align:start; text-align:left; background:var(--bg-dim);
+    border:1px solid var(--border); border-radius:16px; overflow:hidden; cursor:pointer;
+    font-family:var(--font-body); transition:transform .15s ease, border-color .15s ease;
+  }
+  .search-dish-card:hover{transform:translateY(-3px); border-color:var(--brand);}
+  .search-dish-card img{width:100%; height:110px; object-fit:cover; display:block; background:var(--bg-elevated);}
+  .sdc-body{padding:10px 11px 12px;}
+  .sdc-body h5{font-size:.82rem; margin:0 0 6px; color:var(--text); font-weight:700; line-height:1.25;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.4em;}
+  .sdc-price{display:block; font-weight:800; font-size:.88rem; color:var(--brand-strong); margin-bottom:3px;}
+  .sdc-rating{display:block; font-size:.7rem; color:var(--text-soft); font-weight:700;}
+
   /* ============ RESPONSIVE ============ */
   @media (max-width:980px){
     .hero{grid-template-columns:1fr; padding-top:34px;}
@@ -655,6 +743,13 @@
     }
     .location-picker span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70vw;}
     .brand-word{font-size:1.05rem;}
+
+    /* El buscador queda oculto en la fila del header en mobile, pero se
+       abre igual con este botón — a pantalla completa, como una app. */
+    .search-trigger-mobile{display:inline-flex; order:-1;}
+    .search-overlay{padding:0; background:var(--bg); align-items:stretch; justify-content:stretch;}
+    .search-panel{width:100%; max-width:none; height:100%; max-height:none; border-radius:0; border:none;}
+    .search-back{display:inline-flex; align-items:center; justify-content:center;}
     .brand img{height:34px;}
     /* La campanita de notificaciones no hace nada todavía, no vale la
        pena el espacio que ocupa en pantallas chicas. */
@@ -752,6 +847,9 @@
     </div>
 
     <div class="header-actions">
+      <button class="icon-btn search-trigger-mobile" id="open-search-mobile" type="button" aria-label="Buscar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
       <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar tema">
         <svg class="icon-sun" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
         <svg class="icon-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -768,6 +866,25 @@
     </div>
   </div>
 </header>
+
+<!-- ============ BUSCADOR (overlay para mobile y desktop) ============ -->
+<div class="search-overlay" id="search-overlay" aria-hidden="true">
+  <div class="search-panel">
+    <div class="search-top">
+      <button class="search-back" id="search-back-btn" type="button" aria-label="Volver">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="search-input-wrap">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="search-overlay-input" placeholder="Busca restaurantes o platos…" autocomplete="off">
+        <button class="search-clear" id="search-clear-btn" type="button" aria-label="Limpiar búsqueda" style="display:none;">✕</button>
+      </div>
+    </div>
+    <div class="search-body" id="search-body">
+      <div class="search-empty">Busca por nombre de restaurante o plato — por ejemplo "hamburguesa" o "sushi" 🔍</div>
+    </div>
+  </div>
+</div>
 
 <main id="top">
 <div id="view-home">
@@ -1226,12 +1343,12 @@ const restaurants = [
     lat:-8.3791, lng:-74.5539, address:'Jr. Tarapacá, cerca a la Plaza de Armas',
     image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Comidas', name:'Clásica MotoMoto', desc:'Carne, queso cheddar, lechuga y salsa especial.', price:18.90, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Comidas', name:'Doble Bacon', desc:'Doble carne, bacon crocante y queso.', price:24.50, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Acompañamientos', name:'Papas Fritas', desc:'Porción grande con salsas a elección.', price:9.90, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Comidas', name:'Chicken Crispy', desc:'Pollo crocante, mayo picante y pepinillos.', price:19.90, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Bebidas', name:'Chicha Morada 1/2L', desc:'Preparada al día, bien helada.', price:6.00, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d6', category:'Bebidas', name:'Gaseosa 500ml', desc:'Inca Kola, Coca-Cola o Sprite.', price:5.00, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Comidas', name:'Clásica MotoMoto', desc:'Carne, queso cheddar, lechuga y salsa especial.', price:18.90, rating:4.5, reviews:9, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Comidas', name:'Doble Bacon', desc:'Doble carne, bacon crocante y queso.', price:24.50, rating:4.5, reviews:137, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Acompañamientos', name:'Papas Fritas', desc:'Porción grande con salsas a elección.', price:9.90, rating:3.9, reviews:107, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Comidas', name:'Chicken Crispy', desc:'Pollo crocante, mayo picante y pepinillos.', price:19.90, rating:4.1, reviews:137, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Bebidas', name:'Chicha Morada 1/2L', desc:'Preparada al día, bien helada.', price:6.00, rating:5.0, reviews:117, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d6', category:'Bebidas', name:'Gaseosa 500ml', desc:'Inca Kola, Coca-Cola o Sprite.', price:5.00, rating:4.9, reviews:173, image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=70&auto=format&fit=crop' }
     ]
   },
   {
@@ -1241,11 +1358,11 @@ const restaurants = [
     lat:-8.3819, lng:-74.5468, address:'Malecón Grau, frente al río Ucayali',
     image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Rolls', name:'Roll California x10', desc:'Palta, kanikama y queso crema.', price:22.00, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Rolls', name:'Roll Acevichado x10', desc:'Langostino, palta y toque acevichado.', price:26.00, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Sashimi', name:'Sashimi Salmón (10 pzs)', desc:'Corte fresco del día.', price:32.00, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Entradas', name:'Gyozas de Cerdo', desc:'6 unidades con salsa ponzu.', price:15.00, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Bebidas', name:'Ramune Original', desc:'Gaseosa japonesa, bien helada.', price:8.00, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Rolls', name:'Roll California x10', desc:'Palta, kanikama y queso crema.', price:22.00, rating:4.7, reviews:25, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Rolls', name:'Roll Acevichado x10', desc:'Langostino, palta y toque acevichado.', price:26.00, rating:4.4, reviews:93, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Sashimi', name:'Sashimi Salmón (10 pzs)', desc:'Corte fresco del día.', price:32.00, rating:4.4, reviews:34, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Entradas', name:'Gyozas de Cerdo', desc:'6 unidades con salsa ponzu.', price:15.00, rating:3.8, reviews:29, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Bebidas', name:'Ramune Original', desc:'Gaseosa japonesa, bien helada.', price:8.00, rating:4.8, reviews:14, image:'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=200&q=70&auto=format&fit=crop' }
     ]
   },
   {
@@ -1255,11 +1372,11 @@ const restaurants = [
     lat:-8.3690, lng:-74.5570, address:'Av. Centenario, San Fernando',
     image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Pizzas', name:'Pizza Margarita', desc:'Salsa de tomate, mozzarella y albahaca.', price:28.00, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Pizzas', name:'Pizza Pepperoni', desc:'Doble pepperoni y mozzarella.', price:32.00, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Pastas', name:'Fettuccine Alfredo', desc:'Pasta fresca en salsa cremosa.', price:24.00, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Postres', name:'Tiramisú', desc:'Postre clásico italiano casero.', price:14.00, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Bebidas', name:'Limonada Frozen', desc:'Limonada frappé bien fría.', price:9.00, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Pizzas', name:'Pizza Margarita', desc:'Salsa de tomate, mozzarella y albahaca.', price:28.00, rating:4.0, reviews:49, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Pizzas', name:'Pizza Pepperoni', desc:'Doble pepperoni y mozzarella.', price:32.00, rating:4.1, reviews:58, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Pastas', name:'Fettuccine Alfredo', desc:'Pasta fresca en salsa cremosa.', price:24.00, rating:4.5, reviews:106, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Postres', name:'Tiramisú', desc:'Postre clásico italiano casero.', price:14.00, rating:3.8, reviews:177, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Bebidas', name:'Limonada Frozen', desc:'Limonada frappé bien fría.', price:9.00, rating:4.4, reviews:166, image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=70&auto=format&fit=crop' }
     ]
   },
   {
@@ -1269,11 +1386,11 @@ const restaurants = [
     lat:-8.3540, lng:-74.5732, address:'Av. Yarinacocha, Puerto Callao',
     image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Comidas', name:'1/4 Pollo + Papas', desc:'Con ensalada y cremas de la casa.', price:19.00, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Comidas', name:'Pollo Entero Familiar', desc:'Pollo entero, papas y ensalada grande.', price:58.00, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Comidas', name:'Anticuchos (2 unid.)', desc:'Corazón a la brasa con papa y choclo.', price:16.00, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Bebidas', name:'Chicha Morada 1L', desc:'Preparada al día, bien helada.', price:8.00, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Bebidas', name:'Inca Kola 1.5L', desc:'Bien fría, para compartir.', price:10.00, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Comidas', name:'1/4 Pollo + Papas', desc:'Con ensalada y cremas de la casa.', price:19.00, rating:5.0, reviews:105, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Comidas', name:'Pollo Entero Familiar', desc:'Pollo entero, papas y ensalada grande.', price:58.00, rating:3.8, reviews:166, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Comidas', name:'Anticuchos (2 unid.)', desc:'Corazón a la brasa con papa y choclo.', price:16.00, rating:4.4, reviews:95, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Bebidas', name:'Chicha Morada 1L', desc:'Preparada al día, bien helada.', price:8.00, rating:4.3, reviews:151, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Bebidas', name:'Inca Kola 1.5L', desc:'Bien fría, para compartir.', price:10.00, rating:4.0, reviews:17, image:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&q=70&auto=format&fit=crop' }
     ]
   },
   {
@@ -1283,12 +1400,12 @@ const restaurants = [
     lat:-8.3852, lng:-74.5493, address:'Jr. Sáenz Peña, cerca al Coliseo Regional',
     image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Postres', name:'Cheesecake de Fresa', desc:'Porción individual, base de galleta.', price:12.50, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Postres', name:'Brownie con Helado', desc:'Brownie tibio con bola de vainilla.', price:14.00, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Postres', name:'Torta de Chocolate (porción)', desc:'Bizcocho húmedo, ganache de chocolate.', price:11.00, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Helados', name:'Helado Artesanal (2 bolas)', desc:'A elección: vainilla, chocolate o lúcuma.', price:10.00, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Frappés', name:'Frappé de Café', desc:'Café helado batido con crema.', price:13.00, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
-      { id:'d6', category:'Frappés', name:'Frappé de Fresa', desc:'Fresa natural batida con hielo.', price:13.00, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Postres', name:'Cheesecake de Fresa', desc:'Porción individual, base de galleta.', price:12.50, rating:4.4, reviews:8, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Postres', name:'Brownie con Helado', desc:'Brownie tibio con bola de vainilla.', price:14.00, rating:4.1, reviews:163, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Postres', name:'Torta de Chocolate (porción)', desc:'Bizcocho húmedo, ganache de chocolate.', price:11.00, rating:5.0, reviews:33, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Helados', name:'Helado Artesanal (2 bolas)', desc:'A elección: vainilla, chocolate o lúcuma.', price:10.00, rating:4.0, reviews:20, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Frappés', name:'Frappé de Café', desc:'Café helado batido con crema.', price:13.00, rating:4.2, reviews:65, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' },
+      { id:'d6', category:'Frappés', name:'Frappé de Fresa', desc:'Fresa natural batida con hielo.', price:13.00, rating:4.1, reviews:58, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=200&q=70&auto=format&fit=crop' }
     ]
   },
   {
@@ -1298,11 +1415,11 @@ const restaurants = [
     lat:-8.3742, lng:-74.5721, address:'Av. Aviación, cerca al aeropuerto',
     image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&q=75&auto=format&fit=crop',
     dishes:[
-      { id:'d1', category:'Comidas', name:'Bowl Poke de Atún', desc:'Atún fresco, palta, arroz y vegetales.', price:23.00, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d2', category:'Comidas', name:'Bowl Quinua & Pollo', desc:'Quinua, pollo grillado y vegetales de estación.', price:21.00, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d3', category:'Comidas', name:'Wrap Vegetariano', desc:'Hummus, vegetales frescos y palta.', price:17.00, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d4', category:'Bebidas', name:'Jugo Verde Detox', desc:'Apio, piña, espinaca y limón.', price:9.00, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
-      { id:'d5', category:'Bebidas', name:'Limonada de Hierbabuena', desc:'Refrescante, endulzada con miel.', price:8.00, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' }
+      { id:'d1', category:'Comidas', name:'Bowl Poke de Atún', desc:'Atún fresco, palta, arroz y vegetales.', price:23.00, rating:4.7, reviews:110, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d2', category:'Comidas', name:'Bowl Quinua & Pollo', desc:'Quinua, pollo grillado y vegetales de estación.', price:21.00, rating:3.8, reviews:51, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d3', category:'Comidas', name:'Wrap Vegetariano', desc:'Hummus, vegetales frescos y palta.', price:17.00, rating:4.3, reviews:78, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d4', category:'Bebidas', name:'Jugo Verde Detox', desc:'Apio, piña, espinaca y limón.', price:9.00, rating:3.9, reviews:133, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' },
+      { id:'d5', category:'Bebidas', name:'Limonada de Hierbabuena', desc:'Refrescante, endulzada con miel.', price:8.00, rating:4.4, reviews:131, image:'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=70&auto=format&fit=crop' }
     ]
   }
 ];
@@ -1551,6 +1668,180 @@ mvDishList.addEventListener('click', (e) => {
 });
 function closeMenu(){ showView(viewHome); }
 mvBackBtn.addEventListener('click', closeMenu);
+
+/* ==========================================================
+   BUSCADOR — funciona igual en mobile (overlay a pantalla completa)
+   y en web (panel flotante debajo del header). Busca coincidencias
+   tanto en restaurantes ("Locales") como en platos individuales
+   ("Productos", agrupados por restaurante, con scroll horizontal).
+========================================================== */
+const searchOverlay = document.getElementById('search-overlay');
+const searchBody = document.getElementById('search-body');
+const searchOverlayInput = document.getElementById('search-overlay-input');
+const searchClearBtn = document.getElementById('search-clear-btn');
+const searchBackBtn = document.getElementById('search-back-btn');
+const openSearchMobileBtn = document.getElementById('open-search-mobile');
+const headerSearchInput = document.querySelector('.search-bar input'); // buscador inline de escritorio
+
+let searchSortPrice = '';   // '', 'asc', 'desc'
+let searchSortRating = '';  // '', 'desc'
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function openSearch(prefill){
+  searchOverlay.classList.add('open');
+  searchOverlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  const q = prefill ?? searchOverlayInput.value ?? '';
+  searchOverlayInput.value = q;
+  renderSearchResults(q);
+  setTimeout(() => searchOverlayInput.focus({ preventScroll:true }), 60);
+}
+function closeSearch(){
+  searchOverlay.classList.remove('open');
+  searchOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function renderSearchResults(query){
+  const q = (query || '').trim().toLowerCase();
+  searchClearBtn.style.display = q ? 'inline-flex' : 'none';
+
+  if(!q){
+    searchBody.innerHTML = `<div class="search-empty">Busca por nombre de restaurante o plato — por ejemplo "hamburguesa" o "sushi" 🔍</div>`;
+    return;
+  }
+
+  const matchedRestaurants = restaurants.filter(r =>
+    r.name.toLowerCase().includes(q) ||
+    r.sub.toLowerCase().includes(q) ||
+    (r.tags || []).some(t => t.toLowerCase().includes(q))
+  );
+
+  const matchedDishGroups = restaurants
+    .map(r => ({
+      r,
+      dishes: r.dishes.filter(d =>
+        d.name.toLowerCase().includes(q) ||
+        d.category.toLowerCase().includes(q) ||
+        (d.desc || '').toLowerCase().includes(q)
+      )
+    }))
+    .filter(g => g.dishes.length > 0);
+
+  matchedDishGroups.forEach(g => {
+    if(searchSortPrice === 'asc') g.dishes.sort((a, b) => a.price - b.price);
+    else if(searchSortPrice === 'desc') g.dishes.sort((a, b) => b.price - a.price);
+    if(searchSortRating === 'desc') g.dishes.sort((a, b) => b.rating - a.rating);
+  });
+
+  if(matchedRestaurants.length === 0 && matchedDishGroups.length === 0){
+    searchBody.innerHTML = `
+      <div class="search-empty">No encontramos nada para "<strong>${escapeHtml(query)}</strong>" 😕<br>Prueba con otra palabra.</div>`;
+    return;
+  }
+
+  let html = '';
+
+  if(matchedRestaurants.length){
+    html += `<h3 class="search-section-title">Locales</h3><div class="search-rest-list">`;
+    html += matchedRestaurants.map(r => `
+      <button class="search-rest-item" type="button" data-rid="${r.id}">
+        <img src="${r.image}" alt="${r.name}" loading="lazy" decoding="async" onerror="this.style.display='none'">
+        <div class="search-rest-info">
+          <h4>${r.name}</h4>
+          <p>${r.sub}</p>
+          <div class="search-rest-meta">
+            <span>★ ${r.rating}</span><span>⏱ ${r.time}</span><span>🛵 ${r.fee || fmtMoney(r.feeValue || 5.5)}</span>
+          </div>
+        </div>
+      </button>
+    `).join('');
+    html += `</div>`;
+  }
+
+  if(matchedDishGroups.length){
+    html += `
+      <div class="search-section-head">
+        <h3 class="search-section-title">Productos</h3>
+        <div class="search-filters">
+          <select id="search-sort-price" aria-label="Ordenar por precio">
+            <option value="">Precio</option>
+            <option value="asc" ${searchSortPrice === 'asc' ? 'selected' : ''}>Menor a mayor</option>
+            <option value="desc" ${searchSortPrice === 'desc' ? 'selected' : ''}>Mayor a menor</option>
+          </select>
+          <select id="search-sort-rating" aria-label="Ordenar por calificación">
+            <option value="">Calificación</option>
+            <option value="desc" ${searchSortRating === 'desc' ? 'selected' : ''}>Mejor calificados</option>
+          </select>
+        </div>
+      </div>
+    `;
+    html += matchedDishGroups.map(g => `
+      <div class="search-prod-group">
+        <button class="search-prod-group-header" type="button" data-rid="${g.r.id}">
+          <img src="${g.r.image}" alt="${g.r.name}" loading="lazy" decoding="async" onerror="this.style.display='none'">
+          <h4>${g.r.name}</h4>
+          <span>★ ${g.r.rating}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="search-prod-row">
+          ${g.dishes.map(d => `
+            <button class="search-dish-card" type="button" data-rid="${g.r.id}" data-did="${d.id}">
+              <img src="${d.image}" alt="${d.name}" loading="lazy" decoding="async" onerror="this.style.display='none'">
+              <div class="sdc-body">
+                <h5>${d.name}</h5>
+                <span class="sdc-price">${fmtMoney(d.price)}</span>
+                <span class="sdc-rating">★ ${d.rating.toFixed(1)} (${d.reviews})</span>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  searchBody.innerHTML = html;
+}
+
+// Abrir el buscador: desde el ícono de lupa en mobile, o al enfocar/escribir
+// en la barra de búsqueda de escritorio.
+openSearchMobileBtn?.addEventListener('click', () => openSearch(''));
+if(headerSearchInput){
+  headerSearchInput.addEventListener('focus', () => openSearch(headerSearchInput.value));
+  headerSearchInput.addEventListener('input', () => {
+    if(!searchOverlay.classList.contains('open')) openSearch(headerSearchInput.value);
+    else { searchOverlayInput.value = headerSearchInput.value; renderSearchResults(headerSearchInput.value); }
+  });
+}
+searchOverlayInput.addEventListener('input', () => {
+  if(headerSearchInput) headerSearchInput.value = searchOverlayInput.value;
+  renderSearchResults(searchOverlayInput.value);
+});
+searchClearBtn.addEventListener('click', () => {
+  searchOverlayInput.value = '';
+  if(headerSearchInput) headerSearchInput.value = '';
+  renderSearchResults('');
+  searchOverlayInput.focus();
+});
+searchBackBtn.addEventListener('click', closeSearch);
+searchOverlay.addEventListener('click', (e) => { if(e.target === searchOverlay) closeSearch(); });
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && searchOverlay.classList.contains('open')) closeSearch();
+});
+searchBody.addEventListener('change', (e) => {
+  if(e.target.id === 'search-sort-price'){ searchSortPrice = e.target.value; renderSearchResults(searchOverlayInput.value); }
+  if(e.target.id === 'search-sort-rating'){ searchSortRating = e.target.value; renderSearchResults(searchOverlayInput.value); }
+});
+searchBody.addEventListener('click', (e) => {
+  const restBtn = e.target.closest('.search-rest-item');
+  const groupHeader = e.target.closest('.search-prod-group-header');
+  const dishCard = e.target.closest('.search-dish-card');
+  const rid = restBtn?.dataset.rid || groupHeader?.dataset.rid || dishCard?.dataset.rid;
+  if(rid){ closeSearch(); openMenu(rid); }
+});
 
 /* ---------- VISTA: MIS DIRECCIONES ---------- */
 const addrListEl = document.getElementById('addr-list');
