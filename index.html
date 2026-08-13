@@ -655,6 +655,12 @@
   .map-shell{
     position:relative; width:100%; height:min(52vh, 420px); border-radius:22px; overflow:hidden;
     border:1px solid var(--border); box-shadow:0 10px 24px -18px var(--shadow); background:var(--bg-dim);
+    /* Leaflet usa z-index internos muy altos (hasta 1000) para sus paneles y
+       controles. Sin esto, esos elementos "se escapan" del recuadro del mapa
+       y terminan tapando el header, los modales, el botón de pedido, etc.
+       isolation:isolate crea un contexto de apilamiento propio para que todo
+       lo de Leaflet quede encerrado dentro de esta caja, sin importar su z-index. */
+    isolation:isolate; z-index:0;
   }
   .map-shell #confirm-map{width:100%; height:100%;}
   .map-pin-fixed{
@@ -2064,6 +2070,16 @@ function ensureConfirmMap(lat, lng){
     confirmMoveTimer = setTimeout(updateConfirmAddress, 350);
   });
   setTimeout(() => confirmMap.invalidateSize(), 80);
+
+  // En mobile, la barra del navegador aparece/desaparece al hacer scroll y
+  // cambia el alto real de la pantalla. Sin esto, Leaflet se queda con un
+  // tamaño de mapa "viejo" y los tiles se ven desalineados o se salen del
+  // recuadro. Recalculamos el tamaño cada vez que cambia el viewport.
+  const refreshMapSize = () => { if(confirmMap) confirmMap.invalidateSize(); };
+  window.addEventListener('resize', refreshMapSize);
+  window.visualViewport?.addEventListener('resize', refreshMapSize);
+  window.addEventListener('orientationchange', () => setTimeout(refreshMapSize, 200));
+
   return confirmMap;
 }
 async function reverseGeocode(lat, lng){
