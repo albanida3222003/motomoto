@@ -564,6 +564,15 @@
   .cart-row .cart-item-name{font-weight:700; font-size:.86rem; margin:0 0 2px;}
   .cart-row .cart-item-price{font-size:.78rem; color:var(--text-soft);}
 
+  .cart-note{margin-top:18px; padding-top:16px; border-top:1px solid var(--border);}
+  .cart-note label{display:block; font-size:.8rem; font-weight:700; color:var(--text-soft); margin-bottom:8px;}
+  .cart-note textarea{
+    width:100%; resize:vertical; min-height:56px; border:1.5px solid var(--border); border-radius:14px;
+    padding:11px 13px; font-family:var(--font-body); font-size:.85rem; color:var(--text); background:var(--bg-dim);
+    outline:none;
+  }
+  .cart-note textarea:focus{border-color:var(--brand);}
+
   .sum-row{display:flex; justify-content:space-between; align-items:center; font-size:.86rem; color:var(--text-soft); padding:4px 0;}
   .sum-row.total{font-size:1.05rem; font-weight:800; color:var(--text); padding-top:10px; margin-top:6px; border-top:1px dashed var(--border);}
   .sum-row strong{color:var(--text); font-weight:700;}
@@ -592,6 +601,7 @@
   .addr-info{flex:1; min-width:0;}
   .addr-title{font-weight:700; font-size:.92rem; margin:0 0 4px; color:var(--text); transition:color .2s ease;}
   .addr-sub{font-size:.78rem; color:var(--text-soft); margin:0;}
+  .addr-ref{font-size:.74rem; color:var(--accent); margin:2px 0 0; font-weight:700;}
   .addr-badge{
     display:inline-block; margin-top:6px; font-size:.68rem; font-weight:800; padding:2px 9px; border-radius:999px;
     background:var(--bg-dim); color:var(--text-soft);
@@ -632,6 +642,14 @@
   .map-confirm-card .mc-divider{border-top:1px solid var(--border); margin:16px 0;}
   .map-confirm-card .mc-city{font-size:.76rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:.03em;}
   .map-confirm-card .mc-address{font-weight:700; font-size:.96rem; margin:2px 0 0;}
+  .mc-label{display:block; font-size:.78rem; font-weight:700; color:var(--text-soft); margin:14px 0 6px;}
+  .map-confirm-card .mc-field{
+    display:flex; align-items:center; gap:8px; border:1.5px solid var(--border); border-radius:14px;
+    padding:11px 13px; margin:0;
+  }
+  .map-confirm-card .mc-field input{border:none; outline:none; background:transparent; width:100%; font-size:.88rem; color:var(--text); font-family:var(--font-body);}
+  .map-confirm-card .mc-field:focus-within{border-color:var(--brand);}
+  .mc-hint{font-size:.74rem; color:var(--text-soft); margin:10px 0 0; line-height:1.4;}
 
   /* ============ BUSCADOR ============ */
   .search-trigger-mobile{display:none;}
@@ -1075,6 +1093,17 @@
     <div class="mc-divider"></div>
     <div class="mc-city">Pucallpa</div>
     <p class="mc-address" id="confirm-address-text">Ubicando…</p>
+
+    <div class="mc-divider"></div>
+    <label class="mc-label" for="confirm-address-note">Dirección aproximada (opcional)</label>
+    <div class="field mc-field">
+      <input type="text" id="confirm-address-note" placeholder="Ej: Jr. 7 de Junio 343" autocomplete="off">
+    </div>
+    <label class="mc-label" for="confirm-reference">Referencia para ubicarte mejor (opcional)</label>
+    <div class="field mc-field">
+      <input type="text" id="confirm-reference" placeholder="Ej: Frente a la comisaría de San Fernando" autocomplete="off">
+    </div>
+    <p class="mc-hint">Si el mapa no cae exacto en tu casa, cuéntanos por acá para que el repartidor te ubique fácil.</p>
   </div>
   <button class="btn btn-primary" id="confirm-address-btn" type="button" style="width:100%; margin-top:16px;">Continuar</button>
 </section>
@@ -1135,6 +1164,10 @@
       <h3>Ingresa con tu celular</h3>
       <p class="sub">Te enviaremos un código de 6 dígitos por WhatsApp para confirmar que eres tú.</p>
       <div class="field">
+        <input type="text" id="name-input" placeholder="Tu nombre" autocomplete="name">
+      </div>
+      <div class="form-msg" id="name-error" style="color:#e0553d;">Escribe tu nombre para que podamos contactarte.</div>
+      <div class="field">
         <span class="cc">🇵🇪 +51</span>
         <input type="tel" inputmode="numeric" id="phone-input" placeholder="987 654 321" maxlength="9">
       </div>
@@ -1156,6 +1189,7 @@
         <input type="text" inputmode="numeric" maxlength="1" class="otp-box">
       </div>
       <div class="form-msg show" id="otp-msg" style="color:var(--whatsapp);">✓ Código enviado por WhatsApp.</div>
+      <div class="form-msg" id="otp-error" style="color:#e0553d;">Código incorrecto. Revisa el mensaje de WhatsApp e intenta de nuevo.</div>
       <button class="btn btn-primary" id="verify-code-btn" type="button">Confirmar y entrar</button>
       <p class="resend">¿No llegó? <button id="resend-btn" type="button">Reenviar en <span id="resend-timer">30</span>s</button></p>
     </div>
@@ -1176,7 +1210,7 @@
     <button class="modal-close" id="loc-close" aria-label="Cerrar">✕</button>
     <div class="modal-icon" style="margin-left:auto; margin-right:auto;">📍</div>
     <h3>Detecta tu dirección</h3>
-    <p class="sub">Usaremos tu ubicación para calcular el envío exacto a cada restaurante: <strong>S/ 2.00 base + S/ 2.00 por km</strong>, con un mínimo de <strong>S/ 5.00</strong>.</p>
+    <p class="sub">Usaremos tu ubicación para calcular el envío exacto a cada restaurante: <strong>S/ 3.00 por km</strong>, con un mínimo de <strong>S/ 6.00</strong>.</p>
     <button class="btn btn-primary" id="loc-detect-btn" type="button" style="width:100%; margin-bottom:10px;">Detectar con mi ubicación actual</button>
     <button class="btn btn-outline" id="loc-skip-btn" type="button" style="width:100%;">Ingresar después</button>
     <p id="loc-status" style="min-height:16px; font-size:.76rem; color:var(--text-soft); margin:12px 0 0;"></p>
@@ -1426,8 +1460,8 @@ const restaurants = [
 
 /* ==========================================================
    UBICACIÓN Y CÁLCULO DE ENVÍO
-   Fórmula: S/ 2.00 base + S/ 2.00 por km de distancia entre el
-   local y el cliente, con un mínimo de S/ 5.00 por pedido.
+   Fórmula: S/ 3.00 por km de distancia entre el
+   local y el cliente, con un mínimo de S/ 6.00 por pedido.
    Para producción: guarda la ubicación del cliente y recalcula
    esto en el backend antes de cobrar, nunca confíes solo en el
    cálculo hecho en el navegador.
@@ -1437,7 +1471,7 @@ const PUCALLPA_CENTER = { lat:-8.3791, lng:-74.5539 }; // Plaza de Armas, usado 
 // Direcciones guardadas del cliente — en producción esto vive en tu backend (p.ej. Supabase),
 // ligado a su cuenta, en vez de en memoria del navegador.
 let savedAddresses = [
-  { id: 1, label:'Casa', address:'San Fernando Mz. 14 - Lt. 5, Pucallpa', lat:-8.3729, lng:-74.5697 }
+  { id: 1, label:'Casa', address:'San Fernando Mz. 14 - Lt. 5, Pucallpa', addressNote:'', reference:'', lat:-8.3729, lng:-74.5697 }
 ];
 let activeAddressId = 1;
 let addrIdSeq = 2;
@@ -1454,9 +1488,9 @@ function haversineKm(lat1, lon1, lat2, lon2){
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 function calcDeliveryFee(km){
-  const raw = 2 + (2 * km);
-  // Redondeo al 0.1 más cercano y mínimo de S/ 5.50 por pedido.
-  return Math.max(5.5, Math.round(raw * 10) / 10);
+  const raw = 3 * km;
+  // Redondeo al 0.1 más cercano y mínimo de S/ 6.00 por pedido.
+  return Math.max(6, Math.round(raw * 10) / 10);
 }
 function updateAllFees(){
   restaurants.forEach(r => {
@@ -1864,7 +1898,8 @@ function renderAddressList(){
       <div class="addr-pin">📍</div>
       <div class="addr-info">
         <p class="addr-title">${a.label}</p>
-        <p class="addr-sub">${a.address}</p>
+        <p class="addr-sub">${a.address}${a.addressNote ? ` · ${a.addressNote}` : ''}</p>
+        ${a.reference ? `<p class="addr-ref">📌 ${a.reference}</p>` : ''}
       </div>
       <button class="addr-del" data-id="${a.id}" type="button" aria-label="Eliminar dirección" style="background:none; border:none; color:var(--text-soft); font-size:1rem; padding:6px; flex-shrink:0;">✕</button>
       <div class="addr-check"></div>
@@ -1984,6 +2019,8 @@ async function updateConfirmAddress(){
 }
 function openMapConfirm(lat, lng, label){
   confirmPendingLabel = label || `Dirección ${savedAddresses.length + 1}`;
+  document.getElementById('confirm-address-note').value = '';
+  document.getElementById('confirm-reference').value = '';
   showView(viewMapConfirm);
   ensureConfirmMap(lat, lng);
   updateConfirmAddress();
@@ -2000,7 +2037,12 @@ mapLocateBtn.addEventListener('click', () => {
 });
 confirmAddressBtn.addEventListener('click', () => {
   const c = confirmMap.getCenter();
-  const newAddr = { id: addrIdSeq++, label: confirmPendingLabel, address: confirmAddressText.textContent, lat:c.lat, lng:c.lng };
+  const addressNote = document.getElementById('confirm-address-note').value.trim();
+  const reference = document.getElementById('confirm-reference').value.trim();
+  const newAddr = {
+    id: addrIdSeq++, label: confirmPendingLabel, address: confirmAddressText.textContent,
+    addressNote, reference, lat:c.lat, lng:c.lng
+  };
   savedAddresses.push(newAddr);
   selectAddress(newAddr.id);
   showView(viewAddresses);
@@ -2014,6 +2056,7 @@ const cartClose = document.getElementById('cart-close');
 const cartBody = document.getElementById('cart-body');
 const cartFoot = document.getElementById('cart-foot');
 const cartBadge = document.getElementById('cart-badge');
+let orderNote = ''; // nota opcional del pedido (ej: "sin cebolla", "tocar timbre 2 veces")
 
 function openCart(){ cartBackdrop.classList.add('open'); renderCart(); }
 function closeCart(){ cartBackdrop.classList.remove('open'); }
@@ -2029,7 +2072,7 @@ function renderCart(){
         <span class="big-emoji">🛒</span>
         Aún no agregaste nada.<br>Explora los restaurantes y arma tu pedido.
       </div>`;
-    cartFoot.innerHTML = `<button class="btn btn-primary" type="button" style="width:100%;" disabled>Continuar pedido</button>`;
+    cartFoot.innerHTML = `<button class="btn btn-primary" type="button" style="width:100%;" disabled>Realizar pedido</button>`;
     return;
   }
 
@@ -2059,20 +2102,90 @@ function renderCart(){
         </div>
       `).join('')}
     </div>
-  `).join('');
+  `).join('') + `
+    <div class="cart-note">
+      <label for="order-note-input">Nota para tu pedido (opcional)</label>
+      <textarea id="order-note-input" rows="2" placeholder="Ej: sin cebolla, tocar timbre 2 veces, dejar con el guardián…">${orderNote}</textarea>
+    </div>
+  `;
 
   const { subtotal, deliveryFee, total, restaurantCount } = cartTotals();
   cartFoot.innerHTML = `
     <div class="sum-row"><span>Subtotal</span><strong>${fmtMoney(subtotal)}</strong></div>
     <div class="sum-row"><span>Envío${restaurantCount > 1 ? ` (${restaurantCount} locales)` : ''}</span><strong>${deliveryFee === 0 ? 'Gratis' : fmtMoney(deliveryFee)}</strong></div>
     <div class="sum-row total"><span>Total</span><span>${fmtMoney(total)}</span></div>
-    <button class="btn btn-primary" id="checkout-btn" type="button" style="width:100%; margin-top:14px;">Continuar pedido</button>
+    <button class="btn btn-primary" id="checkout-btn" type="button" style="width:100%; margin-top:14px;">Realizar pedido</button>
   `;
+  const noteInput = document.getElementById('order-note-input');
+  noteInput.addEventListener('input', () => { orderNote = noteInput.value; });
+
   document.getElementById('checkout-btn').addEventListener('click', () => {
-    closeCart();
-    openModal(); // pide iniciar sesión por WhatsApp para confirmar el pedido
+    orderNote = noteInput.value;
+    if(isVerified && customerName && customerPhone){
+      sendOrderToWhatsApp();
+    } else {
+      closeCart();
+      pendingCheckoutAfterAuth = true;
+      openModal(); // pide nombre + celular por WhatsApp para confirmar el pedido
+    }
   });
 }
+
+/* ==========================================================
+   ENVÍO DEL PEDIDO POR WHATSAPP
+   Arma un mensaje con todo el detalle del pedido (cliente, platos,
+   totales, dirección + referencia y nota) y lo abre directo en
+   WhatsApp hacia el número del negocio. Mientras no haya un backend
+   propio, este es el "checkout": el pedido llega como mensaje de
+   WhatsApp para que el negocio lo confirme y cobre manualmente.
+========================================================== */
+const MOTOMOTO_WHATSAPP_NUMBER = '51982780329';
+
+function buildOrderMessage(){
+  const items = Object.values(cart);
+  const groups = restaurants
+    .map(r => ({ r, items: items.filter(it => it.rid === r.id) }))
+    .filter(g => g.items.length > 0);
+  const { subtotal, deliveryFee, total } = cartTotals();
+  const addr = savedAddresses.find(a => a.id === activeAddressId) || savedAddresses[0];
+
+  let msg = `🛵 *Nuevo pedido MotoMoto*\n\n`;
+  msg += `👤 Cliente: ${customerName}\n`;
+  msg += `📱 Celular: +51 ${customerPhone}\n\n`;
+
+  groups.forEach(g => {
+    msg += `🍽️ *${g.r.name}*\n`;
+    g.items.forEach(it => {
+      msg += `• ${it.qty}x ${it.dish.name} — ${fmtMoney(it.dish.price * it.qty)}\n`;
+    });
+    msg += `   Envío: ${g.r.fee}\n\n`;
+  });
+
+  msg += `💰 Subtotal: ${fmtMoney(subtotal)}\n`;
+  msg += `🛵 Envío total: ${deliveryFee === 0 ? 'Gratis' : fmtMoney(deliveryFee)}\n`;
+  msg += `*Total a pagar: ${fmtMoney(total)}*\n\n`;
+
+  if(addr){
+    msg += `📍 Dirección: ${addr.address}\n`;
+    if(addr.addressNote) msg += `🏠 Dirección aprox.: ${addr.addressNote}\n`;
+    if(addr.reference) msg += `📌 Referencia: ${addr.reference}\n`;
+  }
+
+  if(orderNote.trim()) msg += `\n📝 Nota: ${orderNote.trim()}\n`;
+
+  return msg;
+}
+
+function sendOrderToWhatsApp(){
+  const message = buildOrderMessage();
+  const url = `https://wa.me/${MOTOMOTO_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank', 'noopener');
+  cart = {};
+  orderNote = '';
+  updateCartBadge();
+  closeCart();
+}
+
 cartBody.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-act]');
   if(!btn) return;
@@ -2109,17 +2222,30 @@ const closeBtn = document.getElementById('modal-close');
 const stepPhone = document.getElementById('step-phone');
 const stepOtp = document.getElementById('step-otp');
 const stepSuccess = document.getElementById('step-success');
+const nameInput = document.getElementById('name-input');
+const nameError = document.getElementById('name-error');
 const phoneInput = document.getElementById('phone-input');
 const phoneError = document.getElementById('phone-error');
 const sendCodeBtn = document.getElementById('send-code-btn');
 const otpPhoneDisplay = document.getElementById('otp-phone-display');
+const otpMsg = document.getElementById('otp-msg');
+const otpError = document.getElementById('otp-error');
 const verifyBtn = document.getElementById('verify-code-btn');
 const finishBtn = document.getElementById('finish-btn');
 const resendBtn = document.getElementById('resend-btn');
 const otpBoxes = document.querySelectorAll('.otp-box');
 
+// Datos del cliente ya confirmados en esta sesión (nombre, celular).
+// Cuando ya están completos no le volvemos a pedir el login para pedir de nuevo.
+let customerName = '';
+let customerPhone = '';
+let isVerified = false;
+// Si el modal se abrió desde "Realizar pedido", al terminar el login
+// seguimos directo a enviar el pedido por WhatsApp.
+let pendingCheckoutAfterAuth = false;
+
 function openModal(){ backdrop.classList.add('open'); showStep(stepPhone); }
-function closeModal(){ backdrop.classList.remove('open'); }
+function closeModal(){ backdrop.classList.remove('open'); pendingCheckoutAfterAuth = false; }
 openBtns.forEach(b => b && b.addEventListener('click', openModal));
 closeBtn.addEventListener('click', closeModal);
 backdrop.addEventListener('click', (e) => { if(e.target === backdrop) closeModal(); });
@@ -2129,19 +2255,28 @@ function showStep(step){
   step.classList.add('active');
 }
 
+// Código de 6 dígitos generado para esta sesión — mientras no haya un
+// proveedor real de WhatsApp conectado (ver notas de Supabase arriba),
+// lo mostramos en pantalla para que el flujo se pueda probar de punta a punta.
+let currentOtpCode = '';
+function generateOtpCode(){ return String(Math.floor(100000 + Math.random() * 900000)); }
+
 sendCodeBtn.addEventListener('click', () => {
+  const name = nameInput.value.trim();
   const digits = phoneInput.value.replace(/\D/g,'');
-  if(digits.length !== 9){
-    phoneError.classList.add('show');
-    phoneInput.focus();
-    return;
-  }
-  phoneError.classList.remove('show');
+  let ok = true;
+  if(name.length < 2){ nameError.classList.add('show'); ok = false; } else { nameError.classList.remove('show'); }
+  if(digits.length !== 9){ phoneError.classList.add('show'); ok = false; } else { phoneError.classList.remove('show'); }
+  if(!ok){ (name.length < 2 ? nameInput : phoneInput).focus(); return; }
 
   // --- AQUÍ va la llamada real a Supabase para disparar el WhatsApp ---
   // await supabase.functions.invoke('send-otp', { body: { phone: `+51${digits}` } });
+  currentOtpCode = generateOtpCode();
 
   otpPhoneDisplay.textContent = `+51 ${digits}`;
+  otpError.classList.remove('show');
+  otpMsg.textContent = `✓ Código enviado por WhatsApp (demo, mientras conectamos WhatsApp real): ${currentOtpCode}`;
+  otpBoxes.forEach(b => b.value = '');
   showStep(stepOtp);
   otpBoxes[0].focus();
   startResendTimer();
@@ -2163,11 +2298,27 @@ verifyBtn.addEventListener('click', () => {
 
   // --- AQUÍ va la verificación real contra Supabase ---
   // const { data, error } = await supabase.functions.invoke('verify-otp', { body: { phone, code } });
+  if(code !== currentOtpCode){
+    otpError.classList.add('show');
+    otpBoxes.forEach(b => b.value = '');
+    otpBoxes[0].focus();
+    return;
+  }
+  otpError.classList.remove('show');
 
+  customerName = nameInput.value.trim();
+  customerPhone = phoneInput.value.replace(/\D/g,'');
+  isVerified = true;
   showStep(stepSuccess);
 });
 
-finishBtn.addEventListener('click', closeModal);
+finishBtn.addEventListener('click', () => {
+  closeModal();
+  if(pendingCheckoutAfterAuth){
+    pendingCheckoutAfterAuth = false;
+    sendOrderToWhatsApp();
+  }
+});
 
 let resendInterval;
 function startResendTimer(){
@@ -2189,6 +2340,9 @@ function startResendTimer(){
 }
 resendBtn.addEventListener('click', () => {
   if(resendBtn.disabled) return;
+  currentOtpCode = generateOtpCode();
+  otpMsg.textContent = `✓ Código reenviado por WhatsApp (demo): ${currentOtpCode}`;
+  otpError.classList.remove('show');
   resendBtn.innerHTML = 'Reenviar en <span id="resend-timer">30</span>s';
   startResendTimer();
 });
@@ -2199,6 +2353,7 @@ document.getElementById('hero-quick-form').addEventListener('submit', (e) => {
   const val = e.target.querySelector('input').value.replace(/\D/g,'');
   openModal();
   phoneInput.value = val;
+  nameInput.focus();
 });
 
 /* ==========================================================
