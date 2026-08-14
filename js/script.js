@@ -689,6 +689,7 @@ function renderAddressList(){
         <p class="addr-sub">${a.address}${a.addressNote ? ` · ${a.addressNote}` : ''}</p>
         ${a.reference ? `<p class="addr-ref">📌 ${a.reference}</p>` : ''}
       </div>
+      <button class="addr-edit" data-id="${a.id}" type="button" aria-label="Editar dirección" style="background:none; border:none; color:var(--text-soft); font-size:1rem; padding:6px; flex-shrink:0;">✏️</button>
       <button class="addr-del" data-id="${a.id}" type="button" aria-label="Eliminar dirección" style="background:none; border:none; color:var(--text-soft); font-size:1rem; padding:6px; flex-shrink:0;">✕</button>
       <div class="addr-check"></div>
     </div>
@@ -719,6 +720,18 @@ addrListEl.addEventListener('click', (e) => {
       if(activeAddressId) selectAddress(activeAddressId);
     }
     renderAddressList();
+    return;
+  }
+  const editBtn = e.target.closest('.addr-edit');
+  if(editBtn){
+    e.stopPropagation();
+    const id = Number(editBtn.dataset.id);
+    const a = savedAddresses.find(x => x.id === id);
+    if(a){
+      openMapConfirm(a.lat, a.lng, a.label, {
+        editId: a.id, addressNote: a.addressNote, reference: a.reference, returnTo: 'addresses'
+      });
+    }
     return;
   }
   const item = e.target.closest('.addr-item');
@@ -803,6 +816,8 @@ locationPickerBtn.addEventListener('click', openAddresses);
 let confirmMap = null;
 let confirmMoveTimer = null;
 let confirmPendingLabel = 'Nueva dirección';
+let editingAddressId = null; // si está seteado, "Continuar" actualiza esta dirección en vez de crear una nueva
+let mapConfirmReturnTo = 'addresses'; // 'addresses' o 'cart' — a dónde volver al terminar
 const confirmAddressText = document.getElementById('confirm-address-text');
 const mapBackBtn = document.getElementById('map-back-btn');
 const mapLocateBtn = document.getElementById('map-locate-btn');
@@ -853,16 +868,24 @@ async function updateConfirmAddress(){
   confirmAddressText.textContent = 'Ubicando…';
   confirmAddressText.textContent = await reverseGeocode(c.lat, c.lng);
 }
-function openMapConfirm(lat, lng, label){
+function openMapConfirm(lat, lng, label, options = {}){
   confirmPendingLabel = label || `Dirección ${savedAddresses.length + 1}`;
-  document.getElementById('confirm-address-note').value = '';
-  document.getElementById('confirm-reference').value = '';
+  editingAddressId = options.editId || null;
+  mapConfirmReturnTo = options.returnTo || 'addresses';
+  document.getElementById('confirm-address-note').value = options.addressNote || '';
+  document.getElementById('confirm-reference').value = options.reference || '';
   document.getElementById('confirm-address-search-status').textContent = '';
+  document.querySelector('#view-map-confirm h2').textContent = editingAddressId ? 'Editar dirección' : 'Confirmar dirección';
+  document.getElementById('confirm-address-btn').textContent = editingAddressId ? 'Guardar cambios' : 'Continuar';
   showView(viewMapConfirm);
   ensureConfirmMap(lat, lng);
   updateConfirmAddress();
 }
-mapBackBtn.addEventListener('click', () => showView(viewAddresses));
+function backFromMapConfirm(){
+  if(mapConfirmReturnTo === 'cart'){ showView(viewHome); openCart(); }
+  else showView(viewAddresses);
+}
+mapBackBtn.addEventListener('click', backFromMapConfirm);
 mapLocateBtn.addEventListener('click', () => {
   if(!navigator.geolocation) return;
   mapLocateBtn.disabled = true;
@@ -911,14 +934,29 @@ confirmAddressBtn.addEventListener('click', () => {
   const c = confirmMap.getCenter();
   const addressNote = document.getElementById('confirm-address-note').value.trim();
   const reference = document.getElementById('confirm-reference').value.trim();
-  const newAddr = {
-    id: addrIdSeq++, label: confirmPendingLabel, address: confirmAddressText.textContent,
-    addressNote, reference, lat:c.lat, lng:c.lng
-  };
-  savedAddresses.push(newAddr);
-  selectAddress(newAddr.id);
-  showView(viewAddresses);
+
+  if(editingAddressId){
+    // Edita la dirección existente (ubicación + referencia) en vez de crear una nueva.
+    const addr = savedAddresses.find(a => a.id === editingAddressId);
+    if(addr){
+      addr.address = confirmAddressText.textContent;
+      addr.addressNote = addressNote;
+      addr.reference = reference;
+      addr.lat = c.lat; addr.lng = c.lng;
+      if(addr.id === activeAddressId) selectAddress(addr.id);
+    }
+    editingAddressId = null;
+  } else {
+    const newAddr = {
+      id: addrIdSeq++, label: confirmPendingLabel, address: confirmAddressText.textContent,
+      addressNote, reference, lat:c.lat, lng:c.lng
+    };
+    savedAddresses.push(newAddr);
+    selectAddress(newAddr.id);
+  }
+
   renderAddressList();
+  backFromMapConfirm();
 });
 
 
@@ -937,9 +975,43 @@ cartClose.addEventListener('click', closeCart);
 cartBackdrop.addEventListener('click', (e) => { if(e.target === cartBackdrop) closeCart(); });
 
 function wireCartAddressButton(){
+  const activeAddr = savedAddresses.find(a => a.id === activeAddressId) || savedAddresses[0];
+
   document.getElementById('cart-change-address-btn')?.addEventListener('click', () => {
     closeCart();
     openAddresses();
+  });
+
+  document.getElementById('cart-edit-location-btn')?.addEventListener('click', () => {
+    if(!activeAddr) return;
+    closeCart();
+    openMapConfirm(activeAddr.lat, activeAddr.lng, activeAddr.label, {
+      editId: activeAddr.id, addressNote: activeAddr.addressNote, reference: activeAddr.reference, returnTo: 'cart'
+    });
+  });
+
+  // Edición rápida de la referencia sin salir del pedido: un tap muestra
+  // un input en línea, y "Guardar" actualiza la dirección al toque.
+  const refDisplay = document.getElementById('cart-address-ref-display');
+  const refEditRow = document.getElementById('cart-ref-edit-row');
+  const refInput = document.getElementById('cart-ref-input');
+
+  document.getElementById('cart-edit-ref-btn')?.addEventListener('click', () => {
+    if(refDisplay) refDisplay.style.display = 'none';
+    if(refEditRow) refEditRow.style.display = 'flex';
+    refInput?.focus();
+    refInput?.select();
+  });
+
+  function saveCartReference(){
+    if(activeAddr) activeAddr.reference = (refInput?.value || '').trim();
+    renderCart();
+  }
+  document.getElementById('cart-ref-save-btn')?.addEventListener('click', saveCartReference);
+  document.getElementById('cart-ref-cancel-btn')?.addEventListener('click', () => renderCart());
+  refInput?.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){ e.preventDefault(); saveCartReference(); }
+    if(e.key === 'Escape'){ e.preventDefault(); renderCart(); }
   });
 }
 
@@ -952,9 +1024,20 @@ function renderCart(){
       <div class="cart-address-info">
         <p class="cart-address-label">Entregar en <strong>${activeAddr.label}</strong></p>
         <p class="cart-address-sub">${activeAddr.address}${activeAddr.addressNote ? ` · ${activeAddr.addressNote}` : ''}</p>
-        ${activeAddr.reference ? `<p class="cart-address-ref">📌 ${activeAddr.reference}</p>` : ''}
+        <p class="cart-address-ref" id="cart-address-ref-display">
+          📌 ${activeAddr.reference ? activeAddr.reference : 'Sin referencia — agrégala aquí'}
+          <button type="button" id="cart-edit-ref-btn" class="cart-ref-edit-btn" aria-label="Editar referencia">✏️</button>
+        </p>
+        <div class="cart-ref-edit-row" id="cart-ref-edit-row">
+          <input type="text" id="cart-ref-input" placeholder="Ej: Frente a la comisaría de San Fernando" value="${(activeAddr.reference || '').replace(/"/g,'&quot;')}">
+          <button type="button" id="cart-ref-save-btn" class="cart-ref-save-btn">Guardar</button>
+          <button type="button" id="cart-ref-cancel-btn" class="cart-ref-cancel-btn" aria-label="Cancelar">✕</button>
+        </div>
       </div>
-      <button type="button" id="cart-change-address-btn">Cambiar</button>
+      <div class="cart-address-actions">
+        <button type="button" id="cart-edit-location-btn">Editar ubicación</button>
+        <button type="button" id="cart-change-address-btn">Cambiar</button>
+      </div>
     </div>
   ` : '';
 
