@@ -55,7 +55,13 @@
         <span class="cart-label">Mi pedido</span>
         <span class="cart-count" id="cart-badge">0</span>
       </button>
-      <button class="btn btn-primary" id="open-auth" type="button">Ingresar</button>
+      <div class="auth-widget" id="auth-widget">
+        <button class="btn btn-primary" id="open-auth" type="button">Ingresar</button>
+        <div class="auth-dropdown" id="auth-dropdown">
+          <button type="button" id="orders-history-btn">🧾 Mis pedidos</button>
+          <button type="button" id="logout-btn">Cerrar sesión</button>
+        </div>
+      </div>
     </div>
   </div>
 </header>
@@ -82,7 +88,7 @@
 <main id="top">
 <div id="view-home">
   <!-- ============ HERO ============ -->
-  <section class="hero">
+  <section class="hero" id="hero-section">
     <div class="hero-copy">
       <span class="eyebrow">Delivery en toda Pucallpa</span>
       <h1>Tu antojo llega<br>antes que te <em>arrepientas</em>.</h1>
@@ -220,6 +226,7 @@
     <h2 id="mv-rest-name"></h2>
   </div>
   <div class="mv-rest-strip" id="mv-rest-strip"></div>
+  <div class="closed-banner" id="mv-closed-banner" style="display:none;"></div>
   <div class="mv-cat-tabs" id="mv-cat-tabs"></div>
   <div class="mv-dish-list" id="mv-dish-list"></div>
 </section>
@@ -239,6 +246,18 @@
   </div>
   <div class="addr-list" id="addr-list"></div>
   <button class="btn btn-primary" id="addr-add-btn" type="button" style="width:100%;">Agregar dirección</button>
+</section>
+
+<!-- ============ VISTA: HISTORIAL DE PEDIDOS (misma página) ============ -->
+<section id="view-orders" class="addr-page" style="display:none;">
+  <div class="mv-topbar">
+    <button class="mv-back" id="orders-back-btn" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 6l-6 6 6 6"/></svg>
+      Volver
+    </button>
+    <h2>Mis pedidos</h2>
+  </div>
+  <div class="orders-list" id="orders-list"></div>
 </section>
 
 <!-- ============ VISTA: CONFIRMAR DIRECCIÓN (mapa real, misma página) ============ -->
@@ -300,7 +319,7 @@
       <p>Tu plataforma de delivery favorita. Comida, súper y más, directo a tu puerta, sin vueltas.</p>
       <div class="footer-contact">
         <span>📍 Pucallpa, Ucayali, Perú</span>
-        <span>💬 +51 987 654 321 (WhatsApp)</span>
+        <span>💬 +51 982 780 329 (WhatsApp)</span>
       </div>
     </div>
     <div class="footer-col">
@@ -396,6 +415,18 @@
   </div>
 </div>
 
+<!-- ============ PERSONALIZA TU PLATO (opciones obligatorias/opcionales) ============ -->
+<div class="modal-backdrop" id="options-backdrop">
+  <div class="modal modal-lg">
+    <div class="sheet-head">
+      <button class="modal-close" id="options-close" aria-label="Cerrar">✕</button>
+      <h3 id="options-dish-name" style="margin:0;">Personaliza tu plato</h3>
+    </div>
+    <div class="sheet-body" id="options-body"></div>
+    <div class="sheet-foot" id="options-foot"></div>
+  </div>
+</div>
+
 <!-- ============ CARRITO ============ -->
 <div class="modal-backdrop" id="cart-backdrop">
   <div class="modal modal-lg">
@@ -408,6 +439,29 @@
   </div>
 </div>
 
-<script src="js/script.js"></script>
+<!-- Datos (reemplazables por llamadas a un backend real) -->
+<script src="js/data/promos.js"></script>
+<script src="js/data/restaurants.js"></script>
+<script src="js/business-hours.js"></script>
+
+<!-- Módulos de la app, en el orden en que se necesitan -->
+<script src="js/theme.js"></script>
+<script src="js/scroll-reveal.js"></script>
+<script src="js/promo-carousel.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/delivery.js"></script>
+<script src="js/cart-core.js"></script>
+<script src="js/views.js"></script>
+<script src="js/dish-options.js"></script>
+<script src="js/search.js"></script>
+<script src="js/addresses.js"></script>
+<script src="js/geocoding.js"></script>
+<script src="js/map-confirm.js"></script>
+<script src="js/cart-modal.js"></script>
+<script src="js/whatsapp-order.js"></script>
+<script src="js/order-history.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/session.js"></script>
+<script src="js/location-modal.js"></script>
 </body>
 </html>
