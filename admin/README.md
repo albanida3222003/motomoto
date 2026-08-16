@@ -8,6 +8,10 @@ Dashboard estático (HTML/CSS/JS puro, sin build step) para gestionar **restaura
 2. Ve a **SQL Editor** → *New query*, pega el contenido completo de `supabase/schema.sql` (en la raíz del proyecto) y dale **Run**. Esto crea las tablas `restaurants`, `dishes`, `promos`, `orders` y sus políticas de seguridad (RLS).
 3. Ve a **Authentication → Users → Add user** y crea tu usuario administrador (email + contraseña). Con eso entras al panel — no hay registro público, solo tú puedes crear cuentas desde ahí.
 
+### (Opcional) Cargar datos de prueba
+
+Para verificar que todo funciona antes de cargar tus datos reales, corre también `supabase/seed.sql` en el SQL Editor (después de `schema.sql`). Esto agrega 4 restaurantes con sus platos, 3 promociones y 3 pedidos de ejemplo en distintos estados (nuevo, confirmado, entregado) — los mismos datos de muestra que ya traía el sitio de clientes. Es seguro volver a correrlo: primero borra esos mismos registros de prueba y los vuelve a crear. Cuando confirmes que el panel funciona, borra manualmente esos restaurantes/pedidos de prueba desde el propio panel antes de cargar tu catálogo real.
+
 ## 2. Conectar el panel a tu proyecto
 
 Edita `admin/js/config.js` y reemplaza:
