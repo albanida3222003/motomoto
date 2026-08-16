@@ -1,6 +1,16 @@
 /* ==========================================================
    CARRITO — estado en memoria y helpers de precio/cantidad
 ========================================================== */
+/* Utilidad compartida: escapa texto antes de insertarlo en HTML.
+   OBLIGATORIO usarla en cualquier dato que haya escrito el cliente
+   (nombre, nota del pedido, referencia de dirección, etc.) antes de
+   meterlo en un template `${...}` — de lo contrario alguien podría
+   escribir algo como `</textarea><img src=x onerror=...>` y ejecutar
+   código en el navegador de quien lo vea (XSS). */
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
 /* ==========================================================
    CARRITO — estado en memoria durante la sesión
    Estructura: cart[ "restauranteId::platoId" ] = { r, dish, qty }

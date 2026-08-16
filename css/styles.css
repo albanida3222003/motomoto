@@ -375,7 +375,10 @@
   .r-card.is-closed .r-thumb img{filter:grayscale(65%) brightness(.7);}
   .r-card.is-closed:hover{transform:none; box-shadow:none;}
   .r-card.is-closed:hover .r-thumb img{transform:none;}
-  .r-hours-status{font-size:.72rem; font-weight:700; margin:0 0 8px; display:flex; align-items:center; gap:4px;}
+  .r-hours-status{
+    font-size:.72rem; font-weight:700; margin:0 0 8px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
   .r-hours-status.open{color:#25AE60;}
   .r-hours-status.closed{color:#E0553D;}
   .r-fav{
@@ -894,7 +897,7 @@
   }
   @media (max-width:720px){
     .search-bar{display:none;}
-    .header-inner{gap:8px; padding:10px 4vw; flex-wrap:wrap; row-gap:8px;}
+    .header-inner{gap:6px; padding:10px 3.5vw; flex-wrap:wrap; row-gap:8px;}
     .brand{order:1;}
     .header-actions{order:2; margin-left:auto;}
     /* La ubicación es importante para calcular el envío, así que en vez de
@@ -904,7 +907,7 @@
       justify-content:center; padding:9px 14px; font-size:.8rem;
     }
     .location-picker span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70vw;}
-    .brand-word{font-size:1.05rem;}
+    .brand-word{font-size:.98rem;}
 
     /* El buscador queda oculto en la fila del header en mobile, pero se
        abre igual con este botón — a pantalla completa, como una app. */
@@ -912,13 +915,18 @@
     .search-overlay{padding:0; background:var(--bg); align-items:stretch; justify-content:stretch;}
     .search-panel{width:100%; max-width:none; height:100%; max-height:none; border-radius:0; border:none;}
     .search-back{display:inline-flex; align-items:center; justify-content:center;}
-    .brand img{height:34px;}
+    .brand img{height:30px;}
+    .brand{gap:6px;}
     /* La campanita de notificaciones no hace nada todavía, no vale la
        pena el espacio que ocupa en pantallas chicas. */
     .header-actions > .icon-btn:not(.theme-toggle):not(.search-trigger-mobile){display:none;}
-    .header-actions{gap:6px;}
+    .header-actions{gap:5px;}
+    .icon-btn{width:34px; height:34px;}
     .btn{padding:10px 16px; font-size:.82rem;}
-    #open-auth{padding:10px 14px;}
+    #open-auth{padding:9px 12px; font-size:.8rem;}
+    #open-auth.logged-in{max-width:78px; font-size:.72rem; padding:9px 10px;}
+    .cart-btn{padding:9px 12px; gap:5px;}
+    .cart-btn .cart-label{display:none;}
 
     /* El repartidor animado es puro adorno y en el celular solo ocupa
        espacio útil de pantalla — lo quitamos y dejamos el hero más
@@ -937,7 +945,13 @@
     .promo-copy p{font-size:.78rem; max-width:none; margin:0 auto 14px; line-height:1.4;}
     .promo-cta{padding:9px 18px; font-size:.8rem;}
     .promo-media{order:-1; height:auto; margin-bottom:4px;}
-    .promo-media img{max-width:96px; aspect-ratio:1/1;}
+    .promo-media img{
+      max-width:150px; aspect-ratio:1/1; border-radius:20px;
+      /* La sombra grande y difusa de escritorio se ve pesada y "flotando"
+         en una imagen chica — la reducimos para que se sienta integrada
+         a la tarjeta en vez de pegada encima. */
+      box-shadow:0 10px 20px -8px rgba(0,0,0,.4);
+    }
     .promo-deco{display:none;}
     .promo-arrow{width:32px; height:32px;}
     .promo-dots{bottom:10px;}
@@ -951,18 +965,21 @@
        aquí las volvemos horizontales y más chicas para que entren más
        restaurantes/platos en la pantalla sin tanto scroll. */
     .card-grid, .mv-dish-list{grid-template-columns:1fr; gap:10px;}
-    .r-card{display:flex; flex-direction:row; border-radius:16px;}
-    .dish-row{flex-direction:row; border-radius:16px;}
-    .r-thumb{width:96px; height:96px; flex-shrink:0;}
-    .dish-thumb{width:96px; height:96px; flex-shrink:0;}
-    .r-body{padding:8px 12px; flex:1; min-width:0;}
-    .dish-body{padding:8px 12px; flex:1; min-width:0;}
-    .r-body h3{font-size:.9rem; margin-bottom:1px;}
-    .r-sub{font-size:.72rem; margin-bottom:5px;}
+    /* Alto FIJO e idéntico para todas las tarjetas — así ninguna sale
+       más rectangular o más ancha que otra, sin importar cuánto texto
+       tenga cada restaurante o plato. */
+    .r-card{display:flex; flex-direction:row; border-radius:16px; height:114px;}
+    .dish-row{flex-direction:row; border-radius:16px; height:130px;}
+    .r-thumb{width:96px; height:100%; flex-shrink:0;}
+    .dish-thumb{width:96px; height:100%; flex-shrink:0;}
+    .r-body{padding:8px 12px; flex:1; min-width:0; height:100%; overflow:hidden; display:flex; flex-direction:column; justify-content:center;}
+    .dish-body{padding:8px 12px; flex:1; min-width:0; height:100%; overflow:hidden; display:flex; flex-direction:column; justify-content:center;}
+    .r-body h3{font-size:.9rem; margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .r-sub{font-size:.72rem; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .r-tags{display:none;}
     .r-meta{gap:7px; padding-top:6px; border-top:none; font-size:.68rem; row-gap:2px;}
     .dish-cat-tag{font-size:.56rem; padding:2px 7px; margin-bottom:3px;}
-    .dish-body h4{font-size:.86rem; margin-bottom:2px;}
+    .dish-body h4{font-size:.86rem; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .dish-body .dish-desc{
       font-size:.72rem; margin-bottom:5px;
       display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
@@ -990,7 +1007,7 @@
     .cart-ref-edit-row{gap:8px;}
     .cart-ref-save-btn, .cart-ref-cancel-btn{font-size:.8rem; padding:9px 14px;}
 
-    #open-auth.logged-in{max-width:96px; font-size:.76rem;}
+    #open-auth.logged-in{max-width:78px;}
     .auth-dropdown{right:-4px; min-width:150px;}
 
     /* Blindaje general: cualquier campo de texto con letra menor a 16px
@@ -1007,9 +1024,6 @@
     .quick-form{flex-wrap:wrap; border-radius:20px;}
     .quick-form button{width:100%;}
     .footer-inner{grid-template-columns:1fr;}
-    .cart-btn{padding:11px 14px;}
-    .cart-btn .cart-label{display:none;}
-    #open-auth{padding:10px 12px; font-size:.78rem;}
   }
 
   @media (prefers-reduced-motion: reduce){

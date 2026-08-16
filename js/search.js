@@ -18,10 +18,6 @@ const headerSearchInput = document.querySelector('.search-bar input'); // buscad
 let searchSortPrice = '';   // '', 'asc', 'desc'
 let searchSortRating = '';  // '', 'desc'
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-}
-
 function openSearch(prefill){
   searchOverlay.classList.add('open');
   searchOverlay.setAttribute('aria-hidden', 'false');

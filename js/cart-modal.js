@@ -63,14 +63,14 @@ function renderCart(){
     <div class="cart-address-select" id="cart-address-select">
       <span class="cart-address-icon">📍</span>
       <div class="cart-address-info">
-        <p class="cart-address-label">Entregar en <strong>${activeAddr.label}</strong></p>
-        <p class="cart-address-sub">${activeAddr.address}${activeAddr.addressNote ? ` · ${activeAddr.addressNote}` : ''}</p>
+        <p class="cart-address-label">Entregar en <strong>${escapeHtml(activeAddr.label)}</strong></p>
+        <p class="cart-address-sub">${escapeHtml(activeAddr.address)}${activeAddr.addressNote ? ` · ${escapeHtml(activeAddr.addressNote)}` : ''}</p>
         <p class="cart-address-ref" id="cart-address-ref-display">
-          📌 ${activeAddr.reference ? activeAddr.reference : 'Sin referencia — agrégala aquí'}
+          📌 ${activeAddr.reference ? escapeHtml(activeAddr.reference) : 'Sin referencia — agrégala aquí'}
           <button type="button" id="cart-edit-ref-btn" class="cart-ref-edit-btn" aria-label="Editar referencia">✏️</button>
         </p>
         <div class="cart-ref-edit-row" id="cart-ref-edit-row">
-          <input type="text" id="cart-ref-input" placeholder="Ej: Frente a la comisaría de San Fernando" value="${(activeAddr.reference || '').replace(/"/g,'&quot;')}">
+          <input type="text" id="cart-ref-input" placeholder="Ej: Frente a la comisaría de San Fernando" value="${escapeHtml(activeAddr.reference || '')}">
           <button type="button" id="cart-ref-save-btn" class="cart-ref-save-btn">Guardar</button>
           <button type="button" id="cart-ref-cancel-btn" class="cart-ref-cancel-btn" aria-label="Cancelar">✕</button>
         </div>
