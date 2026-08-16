@@ -59,10 +59,6 @@ El archivo `.nojekyll` incluido evita que GitHub Pages procese el sitio con Jeky
 - El login es una simulación de OTP por WhatsApp (no envía SMS/WhatsApp real); la sesión y el historial de pedidos se guardan en `localStorage` del navegador.
 - Las imágenes de platos/restaurantes se cargan desde Unsplash vía URL — para producción conviene alojarlas junto con el resto de los `assets/`.
 
-## Panel de administrador
-
-En `/admin` hay un dashboard separado (login + gestión de restaurantes, platos, promociones y pedidos) que guarda todo en **Supabase**. El sitio de clientes (`index.html`) sigue usando sus datos de ejemplo por ahora — son dos partes independientes. Instrucciones completas de configuración en [`admin/README.md`](admin/README.md) y el esquema de base de datos en [`supabase/schema.sql`](supabase/schema.sql).
-
 ## Próximas mejoras sugeridas
 
 - Optimizar y comprimir `assets/logo-light.png` / `logo-dark.png` (pesan más de lo necesario para un logo).
